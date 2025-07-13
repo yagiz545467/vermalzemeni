@@ -217,24 +217,23 @@
         if (SpeechRecognition) {
             recognition = new SpeechRecognition();
             recognition.lang = 'tr-TR';
+            // `continuous` false olacak, bu sayede her konuşma bittiğinde durur ve network hatası olasılığı azalır.
+            recognition.continuous = false;
             recognition.interimResults = false;
-            recognition.continuous = true;
 
             let isListening = false;
-            let userStopped = false; // Kullanıcının mı durdurduğunu takip et
 
             micBtn.addEventListener('click', () => {
                 if (isListening) {
-                    userStopped = true;
                     recognition.stop();
-                } else {
-                    userStopped = false;
-                    try {
-                        recognition.start();
-                    } catch(e) {
-                        console.error("Mikrofon başlatılamadı:", e);
-                        micStatus.textContent = "Mikrofon başlatılamadı.";
-                    }
+                    return;
+                }
+                try {
+                    micStatus.textContent = ""; // Durumu temizle
+                    recognition.start();
+                } catch(e) {
+                    console.error("Mikrofon başlatılamadı:", e);
+                    micStatus.textContent = "Hata: Mikrofon başlatılamadı.";
                 }
             });
 
@@ -249,29 +248,15 @@
                 isListening = false;
                 micBtn.classList.remove('is-listening', 'bg-red-200');
                 micIcon.classList.remove('text-red-600');
-                
-                // Eğer kullanıcı manuel olarak durdurmadıysa ve bir hata yoksa, yeniden başlat.
-                // Bu, 'network' hatası gibi beklenmedik durumlarda bağlantıyı taze tutar.
-                if (!userStopped && !micStatus.textContent.includes("hata")) {
-                    console.log("Bağlantı kesildi, yeniden başlatılıyor...");
-                    micStatus.textContent = "Bağlantı yenileniyor...";
-                    setTimeout(() => recognition.start(), 500); // Kısa bir bekleme süresi
-                } else {
-                    micStatus.textContent = ""; // Kullanıcı durdurduysa durumu temizle
-                }
+                micStatus.textContent = ""; // Başarıyla bittiğinde durumu temizle
             };
 
             recognition.onresult = (event) => {
-                let final_transcript = '';
-                for (let i = event.resultIndex; i < event.results.length; ++i) {
-                    if (event.results[i].isFinal) {
-                        final_transcript += event.results[i][0].transcript;
-                    }
-                }
+                const transcript = event.results[event.resultIndex][0].transcript.trim();
                 
-                if (final_transcript) {
+                if (transcript) {
                     const currentText = malzemelerInput.value.trim();
-                    malzemelerInput.value = currentText + (currentText ? ', ' : '') + final_transcript.trim();
+                    malzemelerInput.value = currentText + (currentText ? ', ' : '') + transcript;
                 }
             };
 
@@ -280,16 +265,12 @@
                 let errorMessage = "Bir hata oluştu.";
                 if (event.error === 'not-allowed' || event.error === 'service-not-allowed') {
                     errorMessage = "Hata: Mikrofon izni reddedildi.";
-                    userStopped = true; // İzin yoksa yeniden başlatmayı deneme
                 } else if (event.error === 'network') {
-                    errorMessage = "Hata: Ağ bağlantısı kurulamadı.";
-                    // Yeniden başlatma onend olayında ele alınacak
+                    errorMessage = "Hata: Ağ bağlantısı kurulamadı. Tekrar deneyin.";
                 } else if (event.error === 'no-speech') {
                     errorMessage = "Hata: Konuşma algılanamadı.";
-                    // Bu durumda da yeniden başlatma denenebilir
                 } else {
                     errorMessage = `Hata: ${event.error}`;
-                    userStopped = true; // Bilinmeyen hatalarda dur
                 }
                 micStatus.textContent = errorMessage;
             };
