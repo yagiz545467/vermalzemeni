@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aşçı Bot ile Tarif Oluşturucu</title>
+    <!-- Tailwind CSS'i projeye dahil ediyoruz -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts'tan Inter yazı tipini dahil ediyoruz -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Marked.js kütüphanesini (Markdown -> HTML) dahil ediyoruz -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <style>
+        /* Temel stil ayarları */
+        body {
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden; /* Yatay kaydırmayı engelle */
+        }
+        /* Markdown'dan gelen başlıkları ve listeleri daha iyi göstermek için stiller */
+        #sonuc h2 {
+            font-size: 1.5rem; /* 24px */
+            font-weight: 600;
+            margin-top: 1.5rem;
+            margin-bottom: 0.5rem;
+            border-bottom: 1px solid #e5e7eb;
+            padding-bottom: 0.5rem;
+        }
+        #sonuc h3 {
+            font-size: 1.25rem; /* 20px */
+            font-weight: 600;
+            margin-top: 1rem;
+            margin-bottom: 0.5rem;
+        }
+        #sonuc ul, #sonuc ol {
+            padding-left: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        #sonuc ul {
+            list-style-type: disc;
+        }
+        #sonuc ol {
+            list-style-type: decimal;
+        }
+        #sonuc li {
+            margin-bottom: 0.5rem;
+        }
+        #sonuc strong {
+            font-weight: 600;
+        }
+        /* Hata durumunda input'u sallama animasyonu */
+        @keyframes shake {
+          10%, 90% { transform: translate3d(-1px, 0, 0); }
+          20%, 80% { transform: translate3d(2px, 0, 0); }
+          30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+          40%, 60% { transform: translate3d(4px, 0, 0); }
+        }
+        .animate-shake {
+            animation: shake 0.82s cubic-bezier(.36,.07,.19,.97) both;
+        }
+        /* Yeni Animasyonlar */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translate3d(0, 30px, 0);
+            }
+            to {
+                opacity: 1;
+                transform: translate3d(0, 0, 0);
+            }
+        }
+        .animate-fadeInUp {
+            animation: fadeInUp 0.8s ease-out forwards;
+        }
+        .result-animation {
+             animation: fadeInUp 0.6s ease-out forwards;
+        }
+        /* Animasyonlar için başlangıç durumu */
+        .initial-hidden {
+            opacity: 0;
+        }
+    </style>
+</head>
+<body class="bg-white text-gray-800">
+
+    <!-- Ana Sayfa Yapısı (Reklamlar için Grid) -->
+    <div class="min-h-screen w-full grid grid-cols-1 lg:grid-cols-[1fr_minmax(0,48rem)_1fr] gap-4">
+        
+        <!-- Sol Reklam Alanı (Sadece büyük ekranlarda görünür) -->
+        <aside class="hidden lg:flex items-center justify-center p-4">
+            <div class="w-full h-96 bg-gray-100 rounded-lg flex items-center justify-center text-gray-400">
+                <!-- Google AdSense kodunuzu buraya yapıştırın -->
+                Sol Reklam Alanı (160x600)
+            </div>
+        </aside>
+
+        <!-- Ana İçerik Konteyneri -->
+        <main class="flex flex-col items-center justify-center bg-gray-50 p-4 w-full">
+            <div id="content-wrapper" class="w-full max-w-2xl mx-auto initial-hidden">
+                
+                <!-- Başlık ve Açıklama -->
+                <div class="text-center mb-8">
+                    <h1 class="text-4xl md:text-5xl font-bold text-gray-900">Elimdekilerle Ne Pişirsem?</h1>
+                    <p class="text-lg text-gray-600 mt-2">Elindeki malzemeleri yaz, Aşçı Bot sana özel tarifler oluştursun.</p>
+                </div>
+
+                <!-- Malzeme Giriş Alanı -->
+                <div class="bg-white p-6 rounded-2xl shadow-lg border border-gray-200">
+                    <textarea id="malzemeler" class="w-full h-32 p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors duration-300 resize-none" placeholder="Malzemeleri aralarına virgül koyarak yazın (örn: tavuk göğsü, domates, soğan, sarımsak, zeytinyağı...)"></textarea>
+                    <button id="tarifUretBtn" class="mt-4 w-full bg-indigo-600 text-white font-semibold py-3 px-4 rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-transform transform hover:scale-105 flex items-center justify-center disabled:bg-indigo-400 disabled:cursor-not-allowed">
+                        <svg id="button-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-magic mr-2" viewBox="0 0 16 16">
+                            <path d="M9.5 2.672a.5.5 0 1 0 1 0V.843a.5.5 0 0 0-1 0v1.829Zm4.5.035A.5.5 0 0 0 13.293 2L12 3.293a.5.5 0 1 0 .707.707L14 2.707a.5.5 0 0 0 0-.707ZM7.293 4L8 3.293a.5.5 0 1 0-.707-.707L6.586 3.293a.5.5 0 0 0 0 .707l.707.707ZM-1.828 6.5A.5.5 0 0 0-1.12 7l.707.707a.5.5 0 0 0 .707-.707L-.12 6.293a.5.5 0 0 0-.707 0l-.707.707Zm1.414 1.414a.5.5 0 0 0 .707 0L.707 7.207a.5.5 0 0 0-.707-.707L-.707 7.207a.5.5 0 0 0 0 .707ZM10 6.5a.5.5 0 1 0 0-1H8.5a.5.5 0 0 0 0 1H10ZM6 8a2 2 0 1 0 0-4 2 2 0 0 0 0 4Zm-3 4.5a.5.5 0 1 0 1 0V9.5a.5.5 0 1 0-1 0v3Zm4.5 1.035a.5.5 0 0 0 .707 0l.707-.707a.5.5 0 0 0-.707-.707l-.707.707a.5.5 0 0 0 0 .707ZM8.5 16a.5.5 0 0 0 .5-.5v-1.5a.5.5 0 0 0-1 0V15.5a.5.5 0 0 0 .5.5Z"/>
+                        </svg>
+                        <span id="button-text">Harika Bir Tarif Üret</span>
+                    </button>
+                </div>
+
+                <!-- Sonuç Alanı -->
+                <div id="sonucAlani" class="mt-8">
+                    <!-- Yükleniyor Animasyonu -->
+                    <div id="loader" class="text-center hidden">
+                        <svg class="animate-spin h-8 w-8 text-indigo-600 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        <p class="mt-2 text-gray-600">Mutfakta harikalar yaratılıyor, lütfen bekleyin...</p>
+                    </div>
+                    
+                    <!-- Sonuç Başlığı -->
+                    <div id="sonucWrapper" class="hidden">
+                        <div id="sonucBaslik" class="text-center mb-4">
+                            <h2 class="text-3xl font-bold text-gray-800 tracking-wider">AŞÇI BOT</h2>
+                        </div>
+                        <!-- Tarif Sonucu -->
+                        <div id="sonuc" class="bg-white p-6 rounded-2xl shadow-lg border border-gray-200 prose max-w-none">
+                            <!-- Üretilen tarif buraya eklenecek -->
+                        </div>
+                    </div>
+                     <!-- Hata Mesajı -->
+                    <div id="hata" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg relative hidden" role="alert">
+                        <strong class="font-bold">Bir sorun oluştu!</strong>
+                        <span class="block sm:inline">Tarif oluşturulurken bir hata meydana geldi. Lütfen API bağlantınızı kontrol edip tekrar deneyin.</span>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Sağ Reklam Alanı (Sadece büyük ekranlarda görünür) -->
+        <aside class="hidden lg:flex items-center justify-center p-4">
+             <div class="w-full h-96 bg-gray-100 rounded-lg flex items-center justify-center text-gray-400">
+                <!-- Google AdSense kodunuzu buraya yapıştırın -->
+                Sağ Reklam Alanı (160x600)
+            </div>
+        </aside>
+
+    </div>
+
+    <script>
+        // Sayfa yüklendiğinde ana içeriğe animasyon ekle
+        window.addEventListener('load', () => {
+            document.getElementById('content-wrapper').classList.remove('initial-hidden');
+            document.getElementById('content-wrapper').classList.add('animate-fadeInUp');
+        });
+
+        // Gerekli HTML elementlerini seçiyoruz
+        const malzemelerInput = document.getElementById('malzemeler');
+        const tarifUretBtn = document.getElementById('tarifUretBtn');
+        const sonucWrapper = document.getElementById('sonucWrapper');
+        const sonucDiv = document.getElementById('sonuc');
+        const loader = document.getElementById('loader');
+        const hataDiv = document.getElementById('hata');
+        const buttonText = document.getElementById('button-text');
+        
+        // Butona tıklama olayını dinliyoruz
+        tarifUretBtn.addEventListener('click', async () => {
+            const malzemeler = malzemelerInput.value.trim();
+
+            if (malzemeler === '') {
+                malzemelerInput.classList.add('border-red-500', 'animate-shake');
+                setTimeout(() => {
+                    malzemelerInput.classList.remove('border-red-500', 'animate-shake');
+                }, 820);
+                return;
+            }
+
+            toggleLoading(true);
+
+            try {
+                const prompt = `
+                    Senin adın Aşçı Bot ve sen usta bir aşçısın. Sana vereceğim malzemelerle bana harika bir yemek tarifi oluştur. 
+                    Tarifin akılda kalıcı bir başlığı olmalı. Malzemeler listesi ve yapılışı adımları açık ve net bir şekilde belirtilmeli.
+                    Tarifin sonuna da küçük bir "Şefin Notu" ekle.
+                    Cevabını Markdown formatında, başlıklar, listeler ve kalın yazılar kullanarak düzenle.
+                    İşte elimdeki malzemeler: ${malzemeler}
+                `;
+                
+                const chatHistory = [{ role: "user", parts: [{ text: prompt }] }];
+                const payload = { contents: chatHistory };
+                const apiKey = "AIzaSyCYBmYwYgM4k9LPw9iISCvhBakuxLAfZUI";
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+                
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    throw new Error(`API hatası: ${response.statusText}`);
+                }
+
+                const result = await response.json();
+                
+                if (result.candidates && result.candidates.length > 0 &&
+                    result.candidates[0].content && result.candidates[0].content.parts &&
+                    result.candidates[0].content.parts.length > 0) {
+                    
+                    const tarifText = result.candidates[0].content.parts[0].text;
+                    displayResult(tarifText);
+
+                } else {
+                    throw new Error("API'den geçerli bir cevap alınamadı.");
+                }
+
+            } catch (error) {
+                console.error('Tarif oluşturulurken hata:', error);
+                displayError();
+            } finally {
+                toggleLoading(false);
+            }
+        });
+
+        function toggleLoading(isLoading) {
+            tarifUretBtn.disabled = isLoading;
+            if (isLoading) {
+                sonucWrapper.classList.add('hidden');
+                hataDiv.classList.add('hidden');
+                loader.classList.remove('hidden');
+                buttonText.textContent = 'Üretiliyor...';
+            } else {
+                loader.classList.add('hidden');
+                buttonText.textContent = 'Harika Bir Tarif Üret';
+            }
+        }
+
+        function displayResult(tarifMarkdown) {
+            sonucDiv.innerHTML = marked.parse(tarifMarkdown);
+            sonucWrapper.classList.remove('hidden');
+            sonucWrapper.classList.add('result-animation'); // Sonuç için animasyon
+        }
+
+        function displayError() {
+            hataDiv.classList.remove('hidden');
+            hataDiv.classList.add('result-animation'); // Hata için animasyon
+            sonucWrapper.classList.add('hidden');
+        }
+
+    </script>
+</body>
+</html>
