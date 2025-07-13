@@ -211,23 +211,24 @@
         
         // --- KONUŞMA TANIMA (SPEECH RECOGNITION) BÖLÜMÜ ---
 
-        // Tarayıcının Web Speech API'yi destekleyip desteklemediğini kontrol et
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
         let recognition;
 
         if (SpeechRecognition) {
             recognition = new SpeechRecognition();
-            recognition.lang = 'tr-TR'; // Türkçe tanıma için
-            recognition.interimResults = false; // Sadece kesin sonuçları al
-            recognition.continuous = true; // Kullanıcı durdurana kadar dinlemeye devam et
+            recognition.lang = 'tr-TR';
+            recognition.interimResults = false;
+            recognition.continuous = true;
 
             let isListening = false;
+            let userStopped = false; // Kullanıcının mı durdurduğunu takip et
 
-            // Mikrofon butonuna tıklama olayı
             micBtn.addEventListener('click', () => {
                 if (isListening) {
+                    userStopped = true;
                     recognition.stop();
                 } else {
+                    userStopped = false;
                     try {
                         recognition.start();
                     } catch(e) {
@@ -237,7 +238,6 @@
                 }
             });
 
-            // Dinleme başladığında
             recognition.onstart = () => {
                 isListening = true;
                 micBtn.classList.add('is-listening', 'bg-red-200');
@@ -245,15 +245,22 @@
                 micStatus.textContent = "Dinliyorum...";
             };
 
-            // Dinleme bittiğinde
             recognition.onend = () => {
                 isListening = false;
                 micBtn.classList.remove('is-listening', 'bg-red-200');
                 micIcon.classList.remove('text-red-600');
-                micStatus.textContent = "";
+                
+                // Eğer kullanıcı manuel olarak durdurmadıysa ve bir hata yoksa, yeniden başlat.
+                // Bu, 'network' hatası gibi beklenmedik durumlarda bağlantıyı taze tutar.
+                if (!userStopped && !micStatus.textContent.includes("hata")) {
+                    console.log("Bağlantı kesildi, yeniden başlatılıyor...");
+                    micStatus.textContent = "Bağlantı yenileniyor...";
+                    setTimeout(() => recognition.start(), 500); // Kısa bir bekleme süresi
+                } else {
+                    micStatus.textContent = ""; // Kullanıcı durdurduysa durumu temizle
+                }
             };
 
-            // Konuşma tanındığında
             recognition.onresult = (event) => {
                 let final_transcript = '';
                 for (let i = event.resultIndex; i < event.results.length; ++i) {
@@ -268,22 +275,26 @@
                 }
             };
 
-            // Hata oluştuğunda
             recognition.onerror = (event) => {
-                console.error("Konuşma tanıma hatası:", event.error);
+                console.error("Konuşma tanıma hatası:", event.error, event.message);
                 let errorMessage = "Bir hata oluştu.";
                 if (event.error === 'not-allowed' || event.error === 'service-not-allowed') {
-                    errorMessage = "Mikrofon izni reddedildi.";
+                    errorMessage = "Hata: Mikrofon izni reddedildi.";
+                    userStopped = true; // İzin yoksa yeniden başlatmayı deneme
                 } else if (event.error === 'network') {
-                    errorMessage = "Ağ hatası, bağlantıyı kontrol edin.";
+                    errorMessage = "Hata: Ağ bağlantısı kurulamadı.";
+                    // Yeniden başlatma onend olayında ele alınacak
                 } else if (event.error === 'no-speech') {
-                    errorMessage = "Konuşma algılanamadı.";
+                    errorMessage = "Hata: Konuşma algılanamadı.";
+                    // Bu durumda da yeniden başlatma denenebilir
+                } else {
+                    errorMessage = `Hata: ${event.error}`;
+                    userStopped = true; // Bilinmeyen hatalarda dur
                 }
                 micStatus.textContent = errorMessage;
             };
 
         } else {
-            // Tarayıcı desteklemiyorsa mikrofon butonunu gizle
             console.warn("Tarayıcınız konuşma tanıma özelliğini desteklemiyor.");
             micBtn.style.display = 'none';
             micStatus.textContent = "Tarayıcınız sesle yazmayı desteklemiyor.";
@@ -292,7 +303,6 @@
 
         // --- TARİF ÜRETME BÖLÜMÜ ---
         
-        // Butona tıklama olayını dinliyoruz
         tarifUretBtn.addEventListener('click', async () => {
             const malzemeler = malzemelerInput.value.trim();
 
@@ -304,7 +314,6 @@
                 return;
             }
 
-            // Konfeti efektini tetikle
             confetti({
                 particleCount: 150,
                 spread: 90,
@@ -374,12 +383,12 @@
         function displayResult(tarifMarkdown) {
             sonucDiv.innerHTML = marked.parse(tarifMarkdown);
             sonucWrapper.classList.remove('hidden');
-            sonucWrapper.classList.add('result-animation'); // Sonuç için animasyon
+            sonucWrapper.classList.add('result-animation');
         }
 
         function displayError() {
             hataDiv.classList.remove('hidden');
-            hataDiv.classList.add('result-animation'); // Hata için animasyon
+            hataDiv.classList.add('result-animation');
             sonucWrapper.classList.add('hidden');
         }
 
