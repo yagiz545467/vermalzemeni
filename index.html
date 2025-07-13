@@ -82,6 +82,18 @@
         .initial-hidden {
             opacity: 0;
         }
+        /* Mikrofon dinleme animasyonu */
+        @keyframes pulse {
+            0%, 100% {
+                box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+            }
+            70% {
+                box-shadow: 0 0 0 10px rgba(239, 68, 68, 0);
+            }
+        }
+        .is-listening {
+            animation: pulse 2s infinite;
+        }
     </style>
 </head>
 <body class="bg-white text-gray-800">
@@ -108,12 +120,21 @@
                 <!-- Başlık ve Açıklama -->
                 <div class="text-center mb-8">
                     <h1 class="text-4xl md:text-5xl font-bold text-gray-900">Elimdekilerle Ne Pişirsem?</h1>
-                    <p class="text-lg text-gray-600 mt-2">Elindeki malzemeleri yaz, Aşçı Bot sana özel tarifler oluştursun.</p>
+                    <p class="text-lg text-gray-600 mt-2">Elindeki malzemeleri yaz veya mikrofona söyle, Aşçı Bot sana özel tarifler oluştursun.</p>
                 </div>
 
                 <!-- Malzeme Giriş Alanı -->
-                <div class="bg-white p-6 rounded-2xl shadow-lg border border-gray-200">
-                    <textarea id="malzemeler" class="w-full h-32 p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors duration-300 resize-none" placeholder="Malzemeleri aralarına virgül koyarak yazın (örn: tavuk göğsü, domates, soğan, sarımsak, zeytinyağı...)"></textarea>
+                <div class="bg-white p-6 rounded-2xl shadow-lg border border-gray-200 relative">
+                    <textarea id="malzemeler" class="w-full h-32 p-4 pr-16 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors duration-300 resize-none" placeholder="Malzemeleri aralarına virgül koyarak yazın veya mikrofona tıklayarak söyleyin..."></textarea>
+                    
+                    <!-- Mikrofon Butonu -->
+                    <button id="micBtn" class="absolute bottom-10 right-8 p-3 rounded-full bg-gray-100 hover:bg-gray-200 transition-all duration-300 focus:outline-none">
+                        <svg id="micIcon" class="w-6 h-6 text-gray-600" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M3.5 6.5A.5.5 0 0 1 4 7v1a4 4 0 0 0 8 0V7a.5.5 0 0 1 1 0v1a5 5 0 0 1-4.5 4.975V15h3a.5.5 0 0 1 0 1h-7a.5.5 0 0 1 0-1h3v-2.025A5 5 0 0 1 3 8V7a.5.5 0 0 1 .5-.5z"/>
+                            <path d="M10 8a2 2 0 1 1-4 0V3a2 2 0 1 1 4 0v5zM8 0a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V3a3 3 0 0 0-3-3z"/>
+                        </svg>
+                    </button>
+
                     <button id="tarifUretBtn" class="mt-4 w-full bg-indigo-600 text-white font-semibold py-3 px-4 rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-transform transform hover:scale-105 flex items-center justify-center disabled:bg-indigo-400 disabled:cursor-not-allowed">
                         <svg id="button-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-magic mr-2" viewBox="0 0 16 16">
                             <path d="M9.5 2.672a.5.5 0 1 0 1 0V.843a.5.5 0 0 0-1 0v1.829Zm4.5.035A.5.5 0 0 0 13.293 2L12 3.293a.5.5 0 1 0 .707.707L14 2.707a.5.5 0 0 0 0-.707ZM7.293 4L8 3.293a.5.5 0 1 0-.707-.707L6.586 3.293a.5.5 0 0 0 0 .707l.707.707ZM-1.828 6.5A.5.5 0 0 0-1.12 7l.707.707a.5.5 0 0 0 .707-.707L-.12 6.293a.5.5 0 0 0-.707 0l-.707.707Zm1.414 1.414a.5.5 0 0 0 .707 0L.707 7.207a.5.5 0 0 0-.707-.707L-.707 7.207a.5.5 0 0 0 0 .707ZM10 6.5a.5.5 0 1 0 0-1H8.5a.5.5 0 0 0 0 1H10ZM6 8a2 2 0 1 0 0-4 2 2 0 0 0 0 4Zm-3 4.5a.5.5 0 1 0 1 0V9.5a.5.5 0 1 0-1 0v3Zm4.5 1.035a.5.5 0 0 0 .707 0l.707-.707a.5.5 0 0 0-.707-.707l-.707.707a.5.5 0 0 0 0 .707ZM8.5 16a.5.5 0 0 0 .5-.5v-1.5a.5.5 0 0 0-1 0V15.5a.5.5 0 0 0 .5.5Z"/>
@@ -181,6 +202,72 @@
         const loader = document.getElementById('loader');
         const hataDiv = document.getElementById('hata');
         const buttonText = document.getElementById('button-text');
+        const micBtn = document.getElementById('micBtn');
+        const micIcon = document.getElementById('micIcon');
+        
+        // --- KONUŞMA TANIMA (SPEECH RECOGNITION) BÖLÜMÜ ---
+
+        // Tarayıcının Web Speech API'yi destekleyip desteklemediğini kontrol et
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        let recognition;
+
+        if (SpeechRecognition) {
+            recognition = new SpeechRecognition();
+            recognition.lang = 'tr-TR'; // Türkçe tanıma için
+            recognition.interimResults = false; // Sadece kesin sonuçları al
+            recognition.continuous = false; // Tek bir konuşmadan sonra dursun
+
+            let isListening = false;
+
+            // Mikrofon butonuna tıklama olayı
+            micBtn.addEventListener('click', () => {
+                if (isListening) {
+                    recognition.stop();
+                } else {
+                    recognition.start();
+                }
+            });
+
+            // Dinleme başladığında
+            recognition.onstart = () => {
+                isListening = true;
+                micBtn.classList.add('is-listening', 'bg-red-200');
+                micIcon.classList.add('text-red-600');
+                malzemelerInput.placeholder = "Dinliyorum...";
+            };
+
+            // Dinleme bittiğinde
+            recognition.onend = () => {
+                isListening = false;
+                micBtn.classList.remove('is-listening', 'bg-red-200');
+                micIcon.classList.remove('text-red-600');
+                malzemelerInput.placeholder = "Malzemeleri aralarına virgül koyarak yazın veya mikrofona tıklayarak söyleyin...";
+            };
+
+            // Konuşma tanındığında
+            recognition.onresult = (event) => {
+                const transcript = event.results[0][0].transcript;
+                const currentText = malzemelerInput.value.trim();
+                // Mevcut metnin sonuna virgül ekleyerek yeni metni ekle
+                malzemelerInput.value = currentText + (currentText ? ', ' : '') + transcript;
+            };
+
+            // Hata oluştuğunda
+            recognition.onerror = (event) => {
+                console.error("Konuşma tanıma hatası:", event.error);
+                if (event.error === 'not-allowed') {
+                    alert("Mikrofon izni vermeniz gerekiyor.");
+                }
+            };
+
+        } else {
+            // Tarayıcı desteklemiyorsa mikrofon butonunu gizle
+            console.warn("Tarayıcınız konuşma tanıma özelliğini desteklemiyor.");
+            micBtn.style.display = 'none';
+        }
+
+
+        // --- TARİF ÜRETME BÖLÜMÜ ---
         
         // Butona tıklama olayını dinliyoruz
         tarifUretBtn.addEventListener('click', async () => {
