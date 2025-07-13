@@ -12,6 +12,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <!-- Marked.js kütüphanesini (Markdown -> HTML) dahil ediyoruz -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <!-- Konfeti efekti için kütüphaneyi dahil ediyoruz -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
     <style>
         /* Temel stil ayarları */
         body {
@@ -88,10 +90,14 @@
     <div class="min-h-screen w-full grid grid-cols-1 lg:grid-cols-[1fr_minmax(0,48rem)_1fr] gap-4">
         
         <!-- Sol Reklam Alanı (Sadece büyük ekranlarda görünür) -->
-        <aside class="hidden lg:flex items-center justify-center p-4">
+        <aside class="hidden lg:flex flex-col items-center justify-center p-4 space-y-4">
             <div class="w-full h-96 bg-gray-100 rounded-lg flex items-center justify-center text-gray-400">
-                <!-- Google AdSense kodunuzu buraya yapıştırın -->
-                Sol Reklam Alanı (160x600)
+                <!-- Google AdSense Kod Alanı 1 -->
+                Reklam Alanı 1
+            </div>
+            <div class="w-full h-96 bg-gray-100 rounded-lg flex items-center justify-center text-gray-400">
+                <!-- Google AdSense Kod Alanı 2 -->
+                Reklam Alanı 2
             </div>
         </aside>
 
@@ -129,7 +135,7 @@
                     
                     <!-- Sonuç Başlığı -->
                     <div id="sonucWrapper" class="hidden">
-                        <div id="sonucBaslik" class="text-center mb-4">
+                        <div id="sonucBaslik" class="text-center my-6">
                             <h2 class="text-3xl font-bold text-gray-800 tracking-wider">AŞÇI BOT</h2>
                         </div>
                         <!-- Tarif Sonucu -->
@@ -147,10 +153,14 @@
         </main>
 
         <!-- Sağ Reklam Alanı (Sadece büyük ekranlarda görünür) -->
-        <aside class="hidden lg:flex items-center justify-center p-4">
+        <aside class="hidden lg:flex flex-col items-center justify-center p-4 space-y-4">
              <div class="w-full h-96 bg-gray-100 rounded-lg flex items-center justify-center text-gray-400">
-                <!-- Google AdSense kodunuzu buraya yapıştırın -->
-                Sağ Reklam Alanı (160x600)
+                <!-- Google AdSense Kod Alanı 1 -->
+                Reklam Alanı 1
+            </div>
+             <div class="w-full h-96 bg-gray-100 rounded-lg flex items-center justify-center text-gray-400">
+                <!-- Google AdSense Kod Alanı 2 -->
+                Reklam Alanı 2
             </div>
         </aside>
 
@@ -183,6 +193,13 @@
                 }, 820);
                 return;
             }
+
+            // Konfeti efektini tetikle
+            confetti({
+                particleCount: 150,
+                spread: 90,
+                origin: { y: 0.6 }
+            });
 
             toggleLoading(true);
 
