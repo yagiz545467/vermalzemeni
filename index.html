@@ -134,8 +134,11 @@
                             <path d="M10 8a2 2 0 1 1-4 0V3a2 2 0 1 1 4 0v5zM8 0a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V3a3 3 0 0 0-3-3z"/>
                         </svg>
                     </button>
+                    
+                    <!-- Mikrofon Durum Metni -->
+                    <p id="micStatus" class="text-xs text-gray-500 text-right mt-1 h-4"></p>
 
-                    <button id="tarifUretBtn" class="mt-4 w-full bg-indigo-600 text-white font-semibold py-3 px-4 rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-transform transform hover:scale-105 flex items-center justify-center disabled:bg-indigo-400 disabled:cursor-not-allowed">
+                    <button id="tarifUretBtn" class="mt-2 w-full bg-indigo-600 text-white font-semibold py-3 px-4 rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-transform transform hover:scale-105 flex items-center justify-center disabled:bg-indigo-400 disabled:cursor-not-allowed">
                         <svg id="button-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-magic mr-2" viewBox="0 0 16 16">
                             <path d="M9.5 2.672a.5.5 0 1 0 1 0V.843a.5.5 0 0 0-1 0v1.829Zm4.5.035A.5.5 0 0 0 13.293 2L12 3.293a.5.5 0 1 0 .707.707L14 2.707a.5.5 0 0 0 0-.707ZM7.293 4L8 3.293a.5.5 0 1 0-.707-.707L6.586 3.293a.5.5 0 0 0 0 .707l.707.707ZM-1.828 6.5A.5.5 0 0 0-1.12 7l.707.707a.5.5 0 0 0 .707-.707L-.12 6.293a.5.5 0 0 0-.707 0l-.707.707Zm1.414 1.414a.5.5 0 0 0 .707 0L.707 7.207a.5.5 0 0 0-.707-.707L-.707 7.207a.5.5 0 0 0 0 .707ZM10 6.5a.5.5 0 1 0 0-1H8.5a.5.5 0 0 0 0 1H10ZM6 8a2 2 0 1 0 0-4 2 2 0 0 0 0 4Zm-3 4.5a.5.5 0 1 0 1 0V9.5a.5.5 0 1 0-1 0v3Zm4.5 1.035a.5.5 0 0 0 .707 0l.707-.707a.5.5 0 0 0-.707-.707l-.707.707a.5.5 0 0 0 0 .707ZM8.5 16a.5.5 0 0 0 .5-.5v-1.5a.5.5 0 0 0-1 0V15.5a.5.5 0 0 0 .5.5Z"/>
                         </svg>
@@ -204,6 +207,7 @@
         const buttonText = document.getElementById('button-text');
         const micBtn = document.getElementById('micBtn');
         const micIcon = document.getElementById('micIcon');
+        const micStatus = document.getElementById('micStatus');
         
         // --- KONUŞMA TANIMA (SPEECH RECOGNITION) BÖLÜMÜ ---
 
@@ -224,7 +228,12 @@
                 if (isListening) {
                     recognition.stop();
                 } else {
-                    recognition.start();
+                    try {
+                        recognition.start();
+                    } catch(e) {
+                        console.error("Mikrofon başlatılamadı:", e);
+                        micStatus.textContent = "Mikrofon başlatılamadı.";
+                    }
                 }
             });
 
@@ -233,7 +242,7 @@
                 isListening = true;
                 micBtn.classList.add('is-listening', 'bg-red-200');
                 micIcon.classList.add('text-red-600');
-                malzemelerInput.placeholder = "Dinliyorum...";
+                micStatus.textContent = "Dinliyorum...";
             };
 
             // Dinleme bittiğinde
@@ -241,30 +250,43 @@
                 isListening = false;
                 micBtn.classList.remove('is-listening', 'bg-red-200');
                 micIcon.classList.remove('text-red-600');
-                malzemelerInput.placeholder = "Malzemeleri aralarına virgül koyarak yazın veya mikrofona tıklayarak söyleyin...";
+                micStatus.textContent = "";
             };
 
             // Konuşma tanındığında
             recognition.onresult = (event) => {
-                // Son tanınan ifadeyi al
-                const transcript = event.results[event.results.length - 1][0].transcript.trim();
-                const currentText = malzemelerInput.value.trim();
-                // Mevcut metnin sonuna virgül ekleyerek yeni metni ekle
-                malzemelerInput.value = currentText + (currentText ? ', ' : '') + transcript;
+                let final_transcript = '';
+                for (let i = event.resultIndex; i < event.results.length; ++i) {
+                    if (event.results[i].isFinal) {
+                        final_transcript += event.results[i][0].transcript;
+                    }
+                }
+                
+                if (final_transcript) {
+                    const currentText = malzemelerInput.value.trim();
+                    malzemelerInput.value = currentText + (currentText ? ', ' : '') + final_transcript.trim();
+                }
             };
 
             // Hata oluştuğunda
             recognition.onerror = (event) => {
                 console.error("Konuşma tanıma hatası:", event.error);
-                if (event.error === 'not-allowed') {
-                    alert("Mikrofon izni vermeniz gerekiyor.");
+                let errorMessage = "Bir hata oluştu.";
+                if (event.error === 'not-allowed' || event.error === 'service-not-allowed') {
+                    errorMessage = "Mikrofon izni reddedildi.";
+                } else if (event.error === 'network') {
+                    errorMessage = "Ağ hatası, bağlantıyı kontrol edin.";
+                } else if (event.error === 'no-speech') {
+                    errorMessage = "Konuşma algılanamadı.";
                 }
+                micStatus.textContent = errorMessage;
             };
 
         } else {
             // Tarayıcı desteklemiyorsa mikrofon butonunu gizle
             console.warn("Tarayıcınız konuşma tanıma özelliğini desteklemiyor.");
             micBtn.style.display = 'none';
+            micStatus.textContent = "Tarayıcınız sesle yazmayı desteklemiyor.";
         }
 
 
