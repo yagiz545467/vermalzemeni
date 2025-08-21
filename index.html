@@ -3,376 +3,151 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aşçı Bot ile Tarif Oluşturucu</title>
-    <!-- Tailwind CSS'i projeye dahil ediyoruz -->
+    <title>Profilimi Kiralıyorum</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Fonts'tan Inter yazı tipini dahil ediyoruz -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Marked.js kütüphanesini (Markdown -> HTML) dahil ediyoruz -->
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <!-- Konfeti efekti için kütüphaneyi dahil ediyoruz -->
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
-        /* Temel stil ayarları */
         body {
             font-family: 'Inter', sans-serif;
-            overflow-x: hidden; /* Yatay kaydırmayı engelle */
-        }
-        /* Markdown'dan gelen başlıkları ve listeleri daha iyi göstermek için stiller */
-        #sonuc h2 {
-            font-size: 1.5rem; /* 24px */
-            font-weight: 600;
-            margin-top: 1.5rem;
-            margin-bottom: 0.5rem;
-            border-bottom: 1px solid #e5e7eb;
-            padding-bottom: 0.5rem;
-        }
-        #sonuc h3 {
-            font-size: 1.25rem; /* 20px */
-            font-weight: 600;
-            margin-top: 1rem;
-            margin-bottom: 0.5rem;
-        }
-        #sonuc ul, #sonuc ol {
-            padding-left: 1.5rem;
-            margin-bottom: 1rem;
-        }
-        #sonuc ul {
-            list-style-type: disc;
-        }
-        #sonuc ol {
-            list-style-type: decimal;
-        }
-        #sonuc li {
-            margin-bottom: 0.5rem;
-        }
-        #sonuc strong {
-            font-weight: 600;
-        }
-        /* Hata durumunda input'u sallama animasyonu */
-        @keyframes shake {
-          10%, 90% { transform: translate3d(-1px, 0, 0); }
-          20%, 80% { transform: translate3d(2px, 0, 0); }
-          30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
-          40%, 60% { transform: translate3d(4px, 0, 0); }
-        }
-        .animate-shake {
-            animation: shake 0.82s cubic-bezier(.36,.07,.19,.97) both;
-        }
-        /* Yeni Animasyonlar */
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translate3d(0, 30px, 0);
-            }
-            to {
-                opacity: 1;
-                transform: translate3d(0, 0, 0);
-            }
-        }
-        .animate-fadeInUp {
-            animation: fadeInUp 0.8s ease-out forwards;
-        }
-        .result-animation {
-             animation: fadeInUp 0.6s ease-out forwards;
-        }
-        /* Animasyonlar için başlangıç durumu */
-        .initial-hidden {
-            opacity: 0;
-        }
-        /* Mikrofon dinleme animasyonu */
-        @keyframes pulse {
-            0%, 100% {
-                box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
-            }
-            70% {
-                box-shadow: 0 0 0 10px rgba(239, 68, 68, 0);
-            }
-        }
-        .is-listening {
-            animation: pulse 2s infinite;
         }
     </style>
 </head>
-<body class="bg-white text-gray-800">
+<body class="bg-gray-900 text-white antialiased">
 
-    <!-- Ana Sayfa Yapısı (Reklamlar için Grid) -->
-    <div class="min-h-screen w-full grid grid-cols-1 lg:grid-cols-[1fr_minmax(0,48rem)_1fr] gap-4">
-        
-        <!-- Sol Reklam Alanı (Sadece büyük ekranlarda görünür) -->
-        <aside class="hidden lg:flex flex-col items-center justify-center p-4 space-y-4">
-            <div class="w-full h-96 bg-gray-100 rounded-lg flex items-center justify-center text-gray-400">
-                <!-- Google AdSense Kod Alanı 1 -->
-                Reklam Alanı 1
-            </div>
-            <div class="w-full h-96 bg-gray-100 rounded-lg flex items-center justify-center text-gray-400">
-                <!-- Google AdSense Kod Alanı 2 -->
-                Reklam Alanı 2
-            </div>
-        </aside>
+    <!-- Ana Konteyner -->
+    <div class="container mx-auto max-w-4xl p-4 sm:p-6 lg:p-8">
 
-        <!-- Ana İçerik Konteyneri -->
-        <main class="flex flex-col items-center justify-center bg-gray-50 p-4 w-full">
-            <div id="content-wrapper" class="w-full max-w-2xl mx-auto initial-hidden">
+        <!-- Başlık Bölümü -->
+        <header class="text-center mb-12">
+            <img src="https://i.hizliresim.com/7kwkwii.png" alt="Yağız Profil Fotoğrafı" class="w-32 h-32 rounded-full mx-auto mb-4 border-4 border-blue-500 shadow-lg">
+            <h1 class="text-4xl sm:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-teal-400">
+                Profilimi Kiralıyorum
+            </h1>
+            <p class="mt-4 text-lg text-gray-400">
+                Markanızı Eğlenceli İçeriklerle Tanıtın!
+            </p>
+        </header>
+
+        <!-- Hizmet Paketleri -->
+        <main>
+            <h2 class="text-3xl font-bold text-center mb-8 text-blue-400">Reklam Paketleri</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+
+                <!-- Özel Reels Reklamı -->
+                <div class="bg-gray-800 rounded-2xl p-8 shadow-2xl flex flex-col justify-between transform hover:scale-105 transition-transform duration-300">
+                    <div>
+                        <h3 class="text-2xl font-bold mb-2 text-teal-300">Özel Reels Reklamı</h3>
+                        <p class="text-4xl font-extrabold mb-4">300 <span class="text-lg font-medium text-gray-400">TL</span></p>
+                        <ul class="space-y-3 text-gray-300 mb-6">
+                            <li class="flex items-center"><svg class="w-5 h-5 text-teal-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>Size özel konsept video</li>
+                            <li class="flex items-center"><svg class="w-5 h-5 text-teal-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>Yüksek etkileşim oranı</li>
+                            <li class="flex items-center"><svg class="w-5 h-5 text-teal-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>Kalıcı içerik</li>
+                        </ul>
+                    </div>
+                    <a href="https://www.shopier.com/38078645" target="_blank" class="mt-auto w-full text-center bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition-colors duration-300 shadow-lg">Satın Al</a>
+                </div>
+
+                <!-- Post Reklamı -->
+                <div class="bg-gray-800 rounded-2xl p-8 shadow-2xl flex flex-col justify-between transform hover:scale-105 transition-transform duration-300">
+                    <div>
+                        <h3 class="text-2xl font-bold mb-2 text-teal-300">Post Reklamı</h3>
+                        <p class="text-4xl font-extrabold mb-4">200 <span class="text-lg font-medium text-gray-400">TL</span></p>
+                        <ul class="space-y-3 text-gray-300 mb-6">
+                            <li class="flex items-center"><svg class="w-5 h-5 text-teal-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>Detaylı ürün/hizmet tanıtımı</li>
+                            <li class="flex items-center"><svg class="w-5 h-5 text-teal-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>Profilde kalıcı görünürlük</li>
+                            <li class="flex items-center"><svg class="w-5 h-5 text-teal-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>Marka etiketleme</li>
+                        </ul>
+                    </div>
+                    <a href="https://www.shopier.com/38078670" target="_blank" class="mt-auto w-full text-center bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition-colors duration-300 shadow-lg">Satın Al</a>
+                </div>
+
+                <!-- Öne Çıkarılanlar Hikaye Reklamı -->
+                <div class="bg-gray-800 rounded-2xl p-8 shadow-2xl flex flex-col justify-between transform hover:scale-105 transition-transform duration-300">
+                    <div>
+                        <h3 class="text-2xl font-bold mb-2 text-teal-300">Öne Çıkarılanlar Hikaye</h3>
+                        <p class="text-4xl font-extrabold mb-4">150 <span class="text-lg font-medium text-gray-400">TL</span></p>
+                        <ul class="space-y-3 text-gray-300 mb-6">
+                            <li class="flex items-center"><svg class="w-5 h-5 text-teal-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>Profilde sabitlenmiş hikaye</li>
+                            <li class="flex items-center"><svg class="w-5 h-5 text-teal-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>Uzun süreli görünürlük</li>
+                            <li class="flex items-center"><svg class="w-5 h-5 text-teal-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>Link paylaşım imkanı</li>
+                        </ul>
+                    </div>
+                    <a href="https://www.shopier.com/38078630" target="_blank" class="mt-auto w-full text-center bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition-colors duration-300 shadow-lg">Satın Al</a>
+                </div>
+
+                <!-- Hikaye Reklamı -->
+                <div class="bg-gray-800 rounded-2xl p-8 shadow-2xl flex flex-col justify-between transform hover:scale-105 transition-transform duration-300">
+                    <div>
+                        <h3 class="text-2xl font-bold mb-2 text-teal-300">Hikaye Reklamı</h3>
+                        <p class="text-4xl font-extrabold mb-4">100 <span class="text-lg font-medium text-gray-400">TL</span></p>
+                        <ul class="space-y-3 text-gray-300 mb-6">
+                            <li class="flex items-center"><svg class="w-5 h-5 text-teal-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>24 saat görünürlük</li>
+                            <li class="flex items-center"><svg class="w-5 h-5 text-teal-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>Hızlı ve etkili tanıtım</li>
+                            <li class="flex items-center"><svg class="w-5 h-5 text-teal-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>Anket ve soru-cevap etkileşimi</li>
+                        </ul>
+                    </div>
+                    <a href="https://www.shopier.com/38119248" target="_blank" class="mt-auto w-full text-center bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition-colors duration-300 shadow-lg">Satın Al</a>
+                </div>
                 
-                <!-- Başlık ve Açıklama -->
-                <div class="text-center mb-8">
-                    <h1 class="text-4xl md:text-5xl font-bold text-gray-900">Elimdekilerle Ne Pişirsem?</h1>
-                    <p class="text-lg text-gray-600 mt-2">Elindeki malzemeleri yaz veya mikrofona söyle, Aşçı Bot sana özel tarifler oluştursun.</p>
+                <!-- Doğum Günü Kutlama Videosu -->
+                <div class="bg-gray-800 rounded-2xl p-8 shadow-2xl flex flex-col justify-between transform hover:scale-105 transition-transform duration-300">
+                    <div>
+                        <h3 class="text-2xl font-bold mb-2 text-teal-300">Doğum Günü Kutlama Videosu</h3>
+                        <p class="text-4xl font-extrabold mb-4">150 <span class="text-lg font-medium text-gray-400">TL</span></p>
+                        <ul class="space-y-3 text-gray-300 mb-6">
+                            <li class="flex items-center"><svg class="w-5 h-5 text-teal-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>Kişiye özel doğum günü mesajı</li>
+                            <li class="flex items-center"><svg class="w-5 h-5 text-teal-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>Eğlenceli ve enerjik video</li>
+                            <li class="flex items-center"><svg class="w-5 h-5 text-teal-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>Hikayede paylaşım</li>
+                        </ul>
+                    </div>
+                    <a href="https://www.shopier.com/38078504" target="_blank" class="mt-auto w-full text-center bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition-colors duration-300 shadow-lg">Satın Al</a>
                 </div>
 
-                <!-- Malzeme Giriş Alanı -->
-                <div class="bg-white p-6 rounded-2xl shadow-lg border border-gray-200 relative">
-                    <textarea id="malzemeler" class="w-full h-32 p-4 pr-16 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors duration-300 resize-none" placeholder="Malzemeleri aralarına virgül koyarak yazın veya mikrofona tıklayarak söyleyin..."></textarea>
-                    
-                    <!-- Mikrofon Butonu -->
-                    <button id="micBtn" class="absolute top-5 right-5 p-3 rounded-full bg-gray-100 hover:bg-gray-200 transition-all duration-300 focus:outline-none">
-                        <svg id="micIcon" class="w-6 h-6 text-gray-600" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 16 16">
-                            <path d="M3.5 6.5A.5.5 0 0 1 4 7v1a4 4 0 0 0 8 0V7a.5.5 0 0 1 1 0v1a5 5 0 0 1-4.5 4.975V15h3a.5.5 0 0 1 0 1h-7a.5.5 0 0 1 0-1h3v-2.025A5 5 0 0 1 3 8V7a.5.5 0 0 1 .5-.5z"/>
-                            <path d="M10 8a2 2 0 1 1-4 0V3a2 2 0 1 1 4 0v5zM8 0a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V3a3 3 0 0 0-3-3z"/>
-                        </svg>
-                    </button>
-                    
-                    <!-- Mikrofon Durum Metni -->
-                    <p id="micStatus" class="text-xs text-gray-500 text-right mt-1 h-4"></p>
-
-                    <button id="tarifUretBtn" class="mt-2 w-full bg-indigo-600 text-white font-semibold py-3 px-4 rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-transform transform hover:scale-105 flex items-center justify-center disabled:bg-indigo-400 disabled:cursor-not-allowed">
-                        <svg id="button-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-magic mr-2" viewBox="0 0 16 16">
-                            <path d="M9.5 2.672a.5.5 0 1 0 1 0V.843a.5.5 0 0 0-1 0v1.829Zm4.5.035A.5.5 0 0 0 13.293 2L12 3.293a.5.5 0 1 0 .707.707L14 2.707a.5.5 0 0 0 0-.707ZM7.293 4L8 3.293a.5.5 0 1 0-.707-.707L6.586 3.293a.5.5 0 0 0 0 .707l.707.707ZM-1.828 6.5A.5.5 0 0 0-1.12 7l.707.707a.5.5 0 0 0 .707-.707L-.12 6.293a.5.5 0 0 0-.707 0l-.707.707Zm1.414 1.414a.5.5 0 0 0 .707 0L.707 7.207a.5.5 0 0 0-.707-.707L-.707 7.207a.5.5 0 0 0 0 .707ZM10 6.5a.5.5 0 1 0 0-1H8.5a.5.5 0 0 0 0 1H10ZM6 8a2 2 0 1 0 0-4 2 2 0 0 0 0 4Zm-3 4.5a.5.5 0 1 0 1 0V9.5a.5.5 0 1 0-1 0v3Zm4.5 1.035a.5.5 0 0 0 .707 0l.707-.707a.5.5 0 0 0-.707-.707l-.707.707a.5.5 0 0 0 0 .707ZM8.5 16a.5.5 0 0 0 .5-.5v-1.5a.5.5 0 0 0-1 0V15.5a.5.5 0 0 0 .5.5Z"/>
-                        </svg>
-                        <span id="button-text">Harika Bir Tarif Üret</span>
-                    </button>
+                <!-- Selam Gönderme Videosu -->
+                <div class="bg-gray-800 rounded-2xl p-8 shadow-2xl flex flex-col justify-between transform hover:scale-105 transition-transform duration-300">
+                    <div>
+                        <h3 class="text-2xl font-bold mb-2 text-teal-300">Selam Gönderme Videosu</h3>
+                        <p class="text-4xl font-extrabold mb-4">150 <span class="text-lg font-medium text-gray-400">TL</span></p>
+                        <ul class="space-y-3 text-gray-300 mb-6">
+                            <li class="flex items-center"><svg class="w-5 h-5 text-teal-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>İstediğiniz kişiye özel selamlama</li>
+                            <li class="flex items-center"><svg class="w-5 h-5 text-teal-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>Samimi ve içten bir video</li>
+                            <li class="flex items-center"><svg class="w-5 h-5 text-teal-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>Unutulmaz bir anı</li>
+                        </ul>
+                    </div>
+                    <a href="https://www.shopier.com/38078523" target="_blank" class="mt-auto w-full text-center bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition-colors duration-300 shadow-lg">Satın Al</a>
                 </div>
 
-                <!-- Sonuç Alanı -->
-                <div id="sonucAlani" class="mt-8">
-                    <!-- Yükleniyor Animasyonu -->
-                    <div id="loader" class="text-center hidden">
-                        <svg class="animate-spin h-8 w-8 text-indigo-600 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                        </svg>
-                        <p class="mt-2 text-gray-600">Mutfakta harikalar yaratılıyor, lütfen bekleyin...</p>
-                    </div>
-                    
-                    <!-- Sonuç Başlığı -->
-                    <div id="sonucWrapper" class="hidden">
-                        <div id="sonucBaslik" class="text-center my-6">
-                            <h2 class="text-3xl font-bold text-gray-800 tracking-wider">AŞÇI BOT</h2>
-                        </div>
-                        <!-- Tarif Sonucu -->
-                        <div id="sonuc" class="bg-white p-6 rounded-2xl shadow-lg border border-gray-200 prose max-w-none">
-                            <!-- Üretilen tarif buraya eklenecek -->
-                        </div>
-                    </div>
-                     <!-- Hata Mesajı -->
-                    <div id="hata" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg relative hidden" role="alert">
-                        <strong class="font-bold">Bir sorun oluştu!</strong>
-                        <span class="block sm:inline">Tarif oluşturulurken bir hata meydana geldi. Lütfen API bağlantınızı kontrol edip tekrar deneyin.</span>
-                    </div>
+            </div>
+
+            <!-- Full Paket -->
+            <div class="mt-16 bg-gradient-to-r from-blue-500 to-teal-500 rounded-2xl p-8 sm:p-12 text-center shadow-2xl">
+                <h3 class="text-3xl sm:text-4xl font-extrabold">Full Paket</h3>
+                <p class="text-xl mt-2 mb-4 text-blue-100">Tüm reklam hizmetleri tek pakette, daha avantajlı!</p>
+                <div class="flex items-center justify-center space-x-4 my-6">
+                    <p class="text-2xl line-through text-blue-200">750 TL</p>
+                    <p class="text-5xl font-black">600 <span class="text-2xl font-bold">TL</span></p>
                 </div>
+                <p class="max-w-2xl mx-auto text-blue-100 mb-8">
+                    Özel Reels, Post, Öne Çıkarılanlar ve Hikaye reklamlarının tamamını içeren bu paketle markanızın Instagram'daki varlığını en üst düzeye çıkarın.
+                </p>
+                <a href="https://www.shopier.com/38078557" target="_blank" class="inline-block bg-white text-blue-600 font-bold py-4 px-10 rounded-lg transition-transform duration-300 hover:scale-105 text-lg shadow-lg">Hepsini Satın Al</a>
             </div>
         </main>
 
-        <!-- Sağ Reklam Alanı (Sadece büyük ekranlarda görünür) -->
-        <aside class="hidden lg:flex flex-col items-center justify-center p-4 space-y-4">
-             <div class="w-full h-96 bg-gray-100 rounded-lg flex items-center justify-center text-gray-400">
-                <!-- Google AdSense Kod Alanı 1 -->
-                Reklam Alanı 1
-            </div>
-             <div class="w-full h-96 bg-gray-100 rounded-lg flex items-center justify-center text-gray-400">
-                <!-- Google AdSense Kod Alanı 2 -->
-                Reklam Alanı 2
-            </div>
-        </aside>
+        <!-- İletişim Bölümü -->
+        <footer class="text-center mt-16">
+            <h2 class="text-2xl font-bold mb-4">İletişime Geçin</h2>
+            <p class="text-gray-400 mb-6">
+                En hızlı iletişim için Instagram üzerinden mesaj gönderebilirsiniz.
+            </p>
+            <a href="https://www.instagram.com/profilimikiraliyorum" target="_blank" class="inline-block bg-pink-600 hover:bg-pink-700 text-white font-bold py-3 px-8 rounded-lg transition-colors duration-300 text-lg shadow-lg">
+                Instagram'dan Ulaş
+            </a>
+        </footer>
 
     </div>
 
-    <script>
-        // Sayfa yüklendiğinde ana içeriğe animasyon ekle
-        window.addEventListener('load', () => {
-            document.getElementById('content-wrapper').classList.remove('initial-hidden');
-            document.getElementById('content-wrapper').classList.add('animate-fadeInUp');
-        });
-
-        // Gerekli HTML elementlerini seçiyoruz
-        const malzemelerInput = document.getElementById('malzemeler');
-        const tarifUretBtn = document.getElementById('tarifUretBtn');
-        const sonucWrapper = document.getElementById('sonucWrapper');
-        const sonucDiv = document.getElementById('sonuc');
-        const loader = document.getElementById('loader');
-        const hataDiv = document.getElementById('hata');
-        const buttonText = document.getElementById('button-text');
-        const micBtn = document.getElementById('micBtn');
-        const micIcon = document.getElementById('micIcon');
-        const micStatus = document.getElementById('micStatus');
-        
-        // --- KONUŞMA TANIMA (SPEECH RECOGNITION) BÖLÜMÜ ---
-
-        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-        let recognition;
-
-        if (SpeechRecognition) {
-            recognition = new SpeechRecognition();
-            recognition.lang = 'tr-TR';
-            // `continuous` false olacak, bu sayede her konuşma bittiğinde durur ve network hatası olasılığı azalır.
-            recognition.continuous = false;
-            recognition.interimResults = false;
-
-            let isListening = false;
-
-            micBtn.addEventListener('click', () => {
-                if (isListening) {
-                    recognition.stop();
-                    return;
-                }
-                try {
-                    micStatus.textContent = ""; // Durumu temizle
-                    recognition.start();
-                } catch(e) {
-                    console.error("Mikrofon başlatılamadı:", e);
-                    micStatus.textContent = "Hata: Mikrofon başlatılamadı.";
-                }
-            });
-
-            recognition.onstart = () => {
-                isListening = true;
-                micBtn.classList.add('is-listening', 'bg-red-200');
-                micIcon.classList.add('text-red-600');
-                micStatus.textContent = "Dinliyorum...";
-            };
-
-            recognition.onend = () => {
-                isListening = false;
-                micBtn.classList.remove('is-listening', 'bg-red-200');
-                micIcon.classList.remove('text-red-600');
-                micStatus.textContent = ""; // Başarıyla bittiğinde durumu temizle
-            };
-
-            recognition.onresult = (event) => {
-                const transcript = event.results[event.resultIndex][0].transcript.trim();
-                
-                if (transcript) {
-                    const currentText = malzemelerInput.value.trim();
-                    malzemelerInput.value = currentText + (currentText ? ', ' : '') + transcript;
-                }
-            };
-
-            recognition.onerror = (event) => {
-                console.error("Konuşma tanıma hatası:", event.error, event.message);
-                let errorMessage = "Bir hata oluştu.";
-                if (event.error === 'not-allowed' || event.error === 'service-not-allowed') {
-                    errorMessage = "Hata: Mikrofon izni reddedildi.";
-                } else if (event.error === 'network') {
-                    errorMessage = "Hata: Ağ bağlantısı kurulamadı. Tekrar deneyin.";
-                } else if (event.error === 'no-speech') {
-                    errorMessage = "Hata: Konuşma algılanamadı.";
-                } else {
-                    errorMessage = `Hata: ${event.error}`;
-                }
-                micStatus.textContent = errorMessage;
-            };
-
-        } else {
-            console.warn("Tarayıcınız konuşma tanıma özelliğini desteklemiyor.");
-            micBtn.style.display = 'none';
-            micStatus.textContent = "Tarayıcınız sesle yazmayı desteklemiyor.";
-        }
-
-
-        // --- TARİF ÜRETME BÖLÜMÜ ---
-        
-        tarifUretBtn.addEventListener('click', async () => {
-            const malzemeler = malzemelerInput.value.trim();
-
-            if (malzemeler === '') {
-                malzemelerInput.classList.add('border-red-500', 'animate-shake');
-                setTimeout(() => {
-                    malzemelerInput.classList.remove('border-red-500', 'animate-shake');
-                }, 820);
-                return;
-            }
-
-            confetti({
-                particleCount: 150,
-                spread: 90,
-                origin: { y: 0.6 }
-            });
-
-            toggleLoading(true);
-
-            try {
-                const prompt = `
-                    Senin adın Aşçı Bot ve sen usta bir aşçısın. Sana vereceğim malzemelerle bana harika bir yemek tarifi oluştur. 
-                    Tarifin akılda kalıcı bir başlığı olmalı. Malzemeler listesi ve yapılışı adımları açık ve net bir şekilde belirtilmeli.
-                    Tarifin sonuna da küçük bir "Şefin Notu" ekle.
-                    Cevabını Markdown formatında, başlıklar, listeler ve kalın yazılar kullanarak düzenle.
-                    İşte elimdeki malzemeler: ${malzemeler}
-                `;
-                
-                const chatHistory = [{ role: "user", parts: [{ text: prompt }] }];
-                const payload = { contents: chatHistory };
-                const apiKey = "";
-                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
-                
-                const response = await fetch(apiUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-
-                if (!response.ok) {
-                    throw new Error(`API hatası: ${response.statusText}`);
-                }
-
-                const result = await response.json();
-                
-                if (result.candidates && result.candidates.length > 0 &&
-                    result.candidates[0].content && result.candidates[0].content.parts &&
-                    result.candidates[0].content.parts.length > 0) {
-                    
-                    const tarifText = result.candidates[0].content.parts[0].text;
-                    displayResult(tarifText);
-
-                } else {
-                    throw new Error("API'den geçerli bir cevap alınamadı.");
-                }
-
-            } catch (error) {
-                console.error('Tarif oluşturulurken hata:', error);
-                displayError();
-            } finally {
-                toggleLoading(false);
-            }
-        });
-
-        function toggleLoading(isLoading) {
-            tarifUretBtn.disabled = isLoading;
-            if (isLoading) {
-                sonucWrapper.classList.add('hidden');
-                hataDiv.classList.add('hidden');
-                loader.classList.remove('hidden');
-                buttonText.textContent = 'Üretiliyor...';
-            } else {
-                loader.classList.add('hidden');
-                buttonText.textContent = 'Harika Bir Tarif Üret';
-            }
-        }
-
-        function displayResult(tarifMarkdown) {
-            sonucDiv.innerHTML = marked.parse(tarifMarkdown);
-            sonucWrapper.classList.remove('hidden');
-            sonucWrapper.classList.add('result-animation');
-        }
-
-        function displayError() {
-            hataDiv.classList.remove('hidden');
-            hataDiv.classList.add('result-animation');
-            sonucWrapper.classList.add('hidden');
-        }
-
-    </script>
 </body>
 </html>
