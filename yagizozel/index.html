@@ -1,17 +1,87 @@
-<a href="https://example.com" class="btn">Siteye Git</a>
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mustafa Hoca Çok Yakışıklı</title>
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(135deg, #1e3c72, #2a5298);
+      font-family: 'Poppins', sans-serif;
+      overflow: hidden;
+      color: white;
+      text-align: center;
+    }
 
-<style>
-  .btn {
-    display: inline-block;
-    padding: 10px 20px;
-    background-color: #0070f3;
-    color: white;
-    text-decoration: none;
-    border-radius: 8px;
-    font-weight: bold;
-    transition: background 0.2s;
-  }
-  .btn:hover {
-    background-color: #005ac1;
-  }
-</style>
+    h1 {
+      font-size: 3rem;
+      font-weight: 800;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      text-shadow: 0 0 10px #fff, 0 0 20px #00f2ff, 0 0 40px #00f2ff;
+      animation: glow 2s ease-in-out infinite alternate;
+    }
+
+    @keyframes glow {
+      from {
+        text-shadow: 0 0 10px #fff, 0 0 20px #00f2ff, 0 0 40px #00f2ff;
+      }
+      to {
+        text-shadow: 0 0 20px #fff, 0 0 30px #00f2ff, 0 0 60px #00f2ff;
+      }
+    }
+
+    button {
+      margin-top: 40px;
+      padding: 15px 40px;
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: white;
+      background: linear-gradient(45deg, #ff416c, #ff4b2b);
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      box-shadow: 0 5px 15px rgba(255, 75, 43, 0.4);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    button:hover {
+      transform: scale(1.1);
+      box-shadow: 0 8px 25px rgba(255, 75, 43, 0.6);
+    }
+
+    /* Arka plan animasyonu */
+    .stars {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background: transparent url('https://www.transparenttextures.com/patterns/stardust.png') repeat;
+      animation: moveStars 60s linear infinite;
+      z-index: 0;
+    }
+
+    @keyframes moveStars {
+      from { background-position: 0 0; }
+      to { background-position: 10000px 5000px; }
+    }
+
+    .content {
+      position: relative;
+      z-index: 1;
+    }
+  </style>
+</head>
+<body>
+  <div class="stars"></div>
+  <div class="content">
+    <h1>Mustafa Hoca Çok Yakışıklı 😎</h1>
+    <button onclick="window.location.href='https://www.google.com'">Siteye Git</button>
+  </div>
+</body>
+</html>
