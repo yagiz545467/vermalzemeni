@@ -56,7 +56,7 @@
       box-shadow: 0 8px 25px rgba(255, 75, 43, 0.6);
     }
 
-    /* Arka plan animasyonu */
+    /* Yıldızlı arka plan animasyonu */
     .stars {
       position: absolute;
       width: 100%;
@@ -75,13 +75,51 @@
       position: relative;
       z-index: 1;
     }
+
+    /* Alt beyaz kutu */
+    .link-box {
+      margin-top: 40px;
+      background: white;
+      color: #333;
+      padding: 20px;
+      border-radius: 20px;
+      width: 300px;
+      box-shadow: 0 5px 20px rgba(255, 255, 255, 0.2);
+      animation: float 4s ease-in-out infinite alternate;
+    }
+
+    @keyframes float {
+      from { transform: translateY(0); }
+      to { transform: translateY(-8px); }
+    }
+
+    .link-box p {
+      font-size: 0.9rem;
+      margin: 0 0 10px;
+    }
+
+    .link-box a {
+      color: #0070f3;
+      text-decoration: none;
+      font-weight: bold;
+      word-break: break-all;
+    }
+
+    .link-box a:hover {
+      text-decoration: underline;
+    }
   </style>
 </head>
 <body>
   <div class="stars"></div>
   <div class="content">
     <h1>Mustafa Hoca Çok Yakışıklı 😎</h1>
-    <button onclick="window.location.href='https://www.google.com'">SUNUMA GİT!</button>
+    <button onclick="window.location.href='https://www.google.com'">Siteye Git</button>
+
+    <div class="link-box">
+      <p>Buton çalışmazsa linke tıkla 👇</p>
+      <a href="https://www.google.com" target="_blank">https://www.google.com</a>
+    </div>
   </div>
 </body>
 </html>
