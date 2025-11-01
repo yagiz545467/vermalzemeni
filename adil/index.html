@@ -103,12 +103,14 @@
   </div>
 
   <audio id="meowSound" src="https://www.myinstants.com/media/sounds/meowrgh.mp3" preload="auto"></audio>
+  <audio id="meowSong" src="https://www.myinstants.com/media/sounds/sad-meow-song.mp3" preload="auto" loop></audio>
 
   <script>
     const btn = document.getElementById('surpriseBtn');
     const topCats = document.getElementById('topCats');
     const bottomCats = document.getElementById('bottomCats');
     const meow = document.getElementById('meowSound');
+    const song = document.getElementById('meowSong');
 
     btn.addEventListener('click', () => {
       topCats.classList.add('show');
@@ -118,6 +120,9 @@
       const text = document.createElement('h1');
       text.textContent = 'İyi ki doğdun Adil!';
       document.body.appendChild(text);
+
+      song.currentTime = 0;
+      song.play();
 
       for (let i = 0; i < 3; i++) {
         setTimeout(() => {
