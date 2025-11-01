@@ -25,17 +25,20 @@
       overflow-x: hidden;
       color: var(--text);
       padding: 1rem;
+      position: relative;
     }
 
     h1 {
       text-align: center;
       font-size: clamp(1.8rem, 6vw, 2.8rem);
       margin-bottom: 0.5rem;
+      z-index: 2;
     }
     p {
       text-align: center;
       font-size: clamp(1rem, 4vw, 1.25rem);
       margin-bottom: 1.5rem;
+      z-index: 2;
     }
 
     .gift-btn {
@@ -55,6 +58,7 @@
       align-items: center;
       justify-content: center;
       gap: 0.5rem;
+      z-index: 2;
     }
     .gift-btn:hover { transform: translateY(-3px); box-shadow: 0 8px 16px rgba(0, 0, 0, 0.25); }
 
@@ -64,6 +68,7 @@
       height: 120px;
       margin-top: 1.5rem;
       transition: transform 0.5s ease;
+      z-index: 2;
     }
     .lid, .base {
       position: absolute;
@@ -123,41 +128,51 @@
       cursor: pointer;
     }
 
-    .mobile-cats {
+    .copy-btn {
+      margin-top: 1rem;
+      background: var(--accent-dark);
+      color: #000;
+      border: none;
+      border-radius: 0.5rem;
+      padding: 0.5rem 1rem;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .cats-strip {
       position: fixed;
-      left: 0;
-      right: 0;
+      left: 5%;
+      right: 5%;
       display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 0 1rem;
+      justify-content: space-around;
       pointer-events: none;
-      z-index: 5;
-      flex-direction: column;
-      height: 100%;
+      z-index: 1;
     }
 
-    .mobile-cats img {
-      width: 120px;
-      height: 120px;
-      animation: bop 1.2s infinite ease-in-out;
-    }
-    .mobile-cats img:first-child {
-      align-self: flex-start;
-      margin-top: 10px;
-    }
-    .mobile-cats img:last-child {
-      align-self: flex-end;
-      margin-bottom: 10px;
+    .cats-strip img {
+      width: 100px;
+      height: 100px;
+      animation: dance 1.5s infinite ease-in-out;
     }
 
-    @keyframes bop {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-10px); }
+    .cats-strip.top { top: 0; }
+    .cats-strip.bottom { bottom: 0; }
+
+    @keyframes dance {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      25% { transform: translateY(-10px) rotate(-5deg); }
+      50% { transform: translateY(0) rotate(5deg); }
+      75% { transform: translateY(-10px) rotate(-5deg); }
     }
   </style>
 </head>
 <body>
+  <div class="cats-strip top">
+    <img src="https://media.giphy.com/media/JIX9t2j0ZTN9S/giphy.gif" alt="dans eden kedi" />
+    <img src="https://media.giphy.com/media/JIX9t2j0ZTN9S/giphy.gif" alt="dans eden kedi" />
+    <img src="https://media.giphy.com/media/JIX9t2j0ZTN9S/giphy.gif" alt="dans eden kedi" />
+  </div>
+
   <h1>İyi Doğdun Adil! 🎂✨</h1>
   <p>Nice mutlu, sağlıklı, kahkahalı yıllara! 🎈</p>
 
@@ -172,28 +187,27 @@
       <button class="close" id="closeGift">✕</button>
       <h2>Sürpriz Hediye 🎉</h2>
       <div id="giftContent"></div>
+      <button class="copy-btn" id="copyGift">🎉 Kopyala</button>
     </div>
   </div>
 
-  <div class="mobile-cats">
-    <img id="mCatTop" alt="üstte dans eden kedi" />
-    <img id="mCatBottom" alt="altta dans eden kedi" />
+  <div class="cats-strip bottom">
+    <img src="https://media.giphy.com/media/3oriO0OEd9QIDdllqo/giphy.gif" alt="dans eden kedi" />
+    <img src="https://media.giphy.com/media/3oriO0OEd9QIDdllqo/giphy.gif" alt="dans eden kedi" />
+    <img src="https://media.giphy.com/media/3oriO0OEd9QIDdllqo/giphy.gif" alt="dans eden kedi" />
   </div>
 
   <script>
   window.addEventListener('DOMContentLoaded', () => {
     const GIFT_TYPE = 'text';
     const GIFT_VALUE = 'Adil, bu akşam yemeği benden! 🍰🎁\nSeni çok seviyoruz!';
-    const CAT_GIF = 'https://media.giphy.com/media/JIX9t2j0ZTN9S/giphy.gif';
-
-    document.getElementById('mCatTop').src = CAT_GIF;
-    document.getElementById('mCatBottom').src = CAT_GIF;
 
     const btn = document.getElementById('giftBtn');
     const box = document.getElementById('box');
     const overlay = document.getElementById('giftOverlay');
     const content = document.getElementById('giftContent');
     const close = document.getElementById('closeGift');
+    const copy = document.getElementById('copyGift');
 
     btn.addEventListener('click', () => {
       box.classList.add('open');
@@ -202,6 +216,12 @@
 
     close.addEventListener('click', () => overlay.classList.remove('show'));
     overlay.addEventListener('click', e => { if (e.target === overlay) overlay.classList.remove('show'); });
+
+    copy.addEventListener('click', () => {
+      navigator.clipboard.writeText(GIFT_VALUE);
+      copy.textContent = '✅ Kopyalandı!';
+      setTimeout(()=> copy.textContent = '🎉 Kopyala', 1500);
+    });
 
     function showGift() {
       overlay.classList.add('show');
