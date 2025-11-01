@@ -125,19 +125,32 @@
 
     .mobile-cats {
       position: fixed;
-      bottom: 10px;
       left: 0;
       right: 0;
       display: flex;
       justify-content: space-between;
+      align-items: center;
       padding: 0 1rem;
       pointer-events: none;
+      z-index: 5;
+      flex-direction: column;
+      height: 100%;
     }
+
     .mobile-cats img {
-      width: 64px;
-      height: 64px;
+      width: 120px;
+      height: 120px;
       animation: bop 1.2s infinite ease-in-out;
     }
+    .mobile-cats img:first-child {
+      align-self: flex-start;
+      margin-top: 10px;
+    }
+    .mobile-cats img:last-child {
+      align-self: flex-end;
+      margin-bottom: 10px;
+    }
+
     @keyframes bop {
       0%, 100% { transform: translateY(0); }
       50% { transform: translateY(-10px); }
@@ -163,19 +176,18 @@
   </div>
 
   <div class="mobile-cats">
-    <img id="mCatLeft" alt="kedi" />
-    <img id="mCatRight" alt="kedi" />
+    <img id="mCatTop" alt="üstte dans eden kedi" />
+    <img id="mCatBottom" alt="altta dans eden kedi" />
   </div>
 
   <script>
   window.addEventListener('DOMContentLoaded', () => {
     const GIFT_TYPE = 'text';
     const GIFT_VALUE = 'Adil, bu akşam yemeği benden! 🍰🎁\nSeni çok seviyoruz!';
-    const LEFT_CAT_GIF = 'https://media.giphy.com/media/JIX9t2j0ZTN9S/giphy.gif';
-    const RIGHT_CAT_GIF = 'https://media.giphy.com/media/3oriO0OEd9QIDdllqo/giphy.gif';
+    const CAT_GIF = 'https://media.giphy.com/media/JIX9t2j0ZTN9S/giphy.gif';
 
-    document.getElementById('mCatLeft').src = LEFT_CAT_GIF;
-    document.getElementById('mCatRight').src = RIGHT_CAT_GIF;
+    document.getElementById('mCatTop').src = CAT_GIF;
+    document.getElementById('mCatBottom').src = CAT_GIF;
 
     const btn = document.getElementById('giftBtn');
     const box = document.getElementById('box');
