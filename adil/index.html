@@ -5,132 +5,83 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>İyi Doğdun Adil! 🎉</title>
   <style>
-    :root {
-      --bg1: #6ee7b7;
-      --bg2: #3b82f6;
-      --accent: #facc15;
-      --text: #111827;
+    :root { --bg1:#6ee7b7; --bg2:#3b82f6; --accent:#facc15; --text:#111827; }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{
+      font-family:'Poppins',sans-serif;
+      background:linear-gradient(135deg,var(--bg1),var(--bg2));
+      min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center;
+      overflow:hidden; color:var(--text); text-align:center; padding:1rem;
     }
-    * {box-sizing:border-box;margin:0;padding:0;}
-    body {
-      font-family: 'Poppins', sans-serif;
-      background: linear-gradient(135deg,var(--bg1),var(--bg2));
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      overflow: hidden;
-      color: var(--text);
-      text-align: center;
-    }
+    .btn{ background:linear-gradient(180deg,var(--accent),#eab308); border:none; border-radius:1rem; color:#000;
+      padding:1rem 2rem; font-size:clamp(1.2rem,5vw,1.5rem); font-weight:600; cursor:pointer; box-shadow:0 6px 12px rgba(0,0,0,.2);
+      transition:transform .2s ease; z-index:2 }
+    .btn:hover{ transform:translateY(-3px) }
 
-    h1 {
-      font-size: clamp(2rem,8vw,3.5rem);
-      margin-top: 1rem;
-      font-weight: 700;
-      opacity: 0;
-      animation: fadeIn 2s ease forwards;
-      background: linear-gradient(90deg, #fde68a, #facc15, #fcd34d);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      text-shadow: 0 0 10px rgba(255,255,255,0.5);
-    }
+    h1{ font-size:clamp(2rem,8vw,3.5rem); margin-top:1rem; font-weight:700; opacity:0; animation:fadeIn 2s ease forwards;
+      background:linear-gradient(90deg,#fde68a,#facc15,#fcd34d); -webkit-background-clip:text; -webkit-text-fill-color:transparent; text-shadow:0 0 10px rgba(255,255,255,.5) }
+    @keyframes fadeIn{ from{opacity:0; transform:scale(.9)} to{opacity:1; transform:scale(1)} }
 
-    @keyframes fadeIn {
-      from { opacity: 0; transform: scale(0.9); }
-      to { opacity: 1; transform: scale(1); }
-    }
-
-    .btn {
-      background: linear-gradient(180deg, var(--accent), #eab308);
-      border: none;
-      border-radius: 1rem;
-      color: #000;
-      padding: 1rem 2rem;
-      font-size: clamp(1.2rem, 5vw, 1.5rem);
-      font-weight: 600;
-      cursor: pointer;
-      box-shadow: 0 6px 12px rgba(0,0,0,0.2);
-      transition: transform 0.2s ease;
-      z-index: 2;
-    }
-    .btn:hover { transform: translateY(-3px); }
-
-    .cats-strip {
-      position: fixed;
-      left: 5%;
-      right: 5%;
-      display: flex;
-      justify-content: space-around;
-      pointer-events: none;
-      z-index: 1;
-      opacity: 0;
-      transition: opacity 1s ease;
-    }
-    .cats-strip.show { opacity: 1; }
-
-    .cats-strip img {
-      width: 100px;
-      height: 100px;
-      animation: dance 1.5s infinite ease-in-out;
-    }
-
-    .cats-strip.top { top: 0; }
-    .cats-strip.bottom { bottom: 0; }
-
-    @keyframes dance {
-      0%, 100% { transform: translateY(0) rotate(0deg); }
-      25% { transform: translateY(-10px) rotate(-5deg); }
-      50% { transform: translateY(0) rotate(5deg); }
-      75% { transform: translateY(-10px) rotate(-5deg); }
-    }
+    .cats-strip{ position:fixed; left:5%; right:5%; display:flex; justify-content:space-around; pointer-events:none; z-index:1; opacity:0; transition:opacity 1s ease }
+    .cats-strip.show{ opacity:1 }
+    .cats-strip img{ width:100px; height:100px; animation:dance 1.5s infinite ease-in-out }
+    .cats-strip.top{ top:0 } .cats-strip.bottom{ bottom:0 }
+    @keyframes dance{ 0%,100%{transform:translateY(0) rotate(0)} 25%{transform:translateY(-10px) rotate(-5deg)} 50%{transform:translateY(0) rotate(5deg)} 75%{transform:translateY(-10px) rotate(-5deg)} }
   </style>
 </head>
 <body>
   <button class="btn" id="surpriseBtn">🎁 Sürpriz</button>
 
-  <div class="cats-strip top" id="topCats">
-    <img src="https://media.giphy.com/media/JIX9t2j0ZTN9S/giphy.gif" alt="dans eden kedi" />
-    <img src="https://media.giphy.com/media/JIX9t2j0ZTN9S/giphy.gif" alt="dans eden kedi" />
-    <img src="https://media.giphy.com/media/JIX9t2j0ZTN9S/giphy.gif" alt="dans eden kedi" />
-  </div>
-
-  <div class="cats-strip bottom" id="bottomCats">
-    <img src="https://media.giphy.com/media/3oriO0OEd9QIDdllqo/giphy.gif" alt="dans eden kedi" />
-    <img src="https://media.giphy.com/media/3oriO0OEd9QIDdllqo/giphy.gif" alt="dans eden kedi" />
-    <img src="https://media.giphy.com/media/3oriO0OEd9QIDdllqo/giphy.gif" alt="dans eden kedi" />
-  </div>
-
-  <audio id="meowSound" src="https://www.myinstants.com/media/sounds/meowrgh.mp3" preload="auto"></audio>
-  <audio id="meowSong" src="https://www.myinstants.com/media/sounds/sad-meow-song.mp3" preload="auto" loop></audio>
+  <!-- Kediler: kaynaklar HTML'de yok, JS ile eklenecek -->
+  <div class="cats-strip top" id="topCats"></div>
+  <div class="cats-strip bottom" id="bottomCats"></div>
 
   <script>
+    // Medya URL'lerini parçalı birleştir (link önizlemelerini engellemek için HTML'de düz metin yok)
+    const GIF_TOP = ['htt','ps://','media','.giphy','.com','/media/','JIX9t2j0ZTN9S','/giphy','.gif'].join('');
+    const GIF_BOTTOM = ['htt','ps://','media','.giphy','.com','/media/','3oriO0OEd9QIDdllqo','/giphy','.gif'].join('');
+    const MEOW = ['htt','ps://','www','.myinstants','.com','/media/sounds/','meowrgh','.mp3'].join('');
+    const SONG = ['htt','ps://','www','.myinstants','.com','/media/sounds/','sad-meow-song','.mp3'].join('');
+
     const btn = document.getElementById('surpriseBtn');
     const topCats = document.getElementById('topCats');
     const bottomCats = document.getElementById('bottomCats');
-    const meow = document.getElementById('meowSound');
-    const song = document.getElementById('meowSong');
+
+    function createCats(stripEl, url){
+      for(let i=0;i<3;i++){
+        const img=document.createElement('img');
+        img.decoding='async';
+        img.alt='dans eden kedi';
+        img.src=url; // yalnızca tıklamadan sonra DOM'a giriyor
+        stripEl.appendChild(img);
+      }
+    }
+
+    function playSounds(){
+      const song = new Audio(SONG); song.loop = true; song.volume = 0.5;
+      const meow = new Audio(MEOW); meow.volume = 1.0;
+      // iOS uyumluluğu: kullanıcı etkileşimi sırasında play çağrıları
+      song.play().catch(()=>{});
+      for(let i=0;i<3;i++){
+        setTimeout(()=>{ meow.currentTime = 0; meow.play().catch(()=>{}); }, i*1000);
+      }
+    }
 
     btn.addEventListener('click', () => {
+      // Buton kaybolsun
+      btn.style.display='none';
+      // Kedileri sahneye ekle
+      createCats(topCats, GIF_TOP);
+      createCats(bottomCats, GIF_BOTTOM);
       topCats.classList.add('show');
       bottomCats.classList.add('show');
-      btn.style.display = 'none';
-
-      const text = document.createElement('h1');
-      text.textContent = 'İyi ki doğdun Adil!';
+      // Kutlama metni
+      const text=document.createElement('h1');
+      text.textContent='İyi ki doğdun Adil!';
       document.body.appendChild(text);
-
-      song.currentTime = 0;
-      song.play();
-
-      for (let i = 0; i < 3; i++) {
-        setTimeout(() => {
-          meow.currentTime = 0;
-          meow.play();
-        }, i * 1000);
-      }
-    });
+      // Sesler
+      playSounds();
+    }, { once: true });
   </script>
 </body>
 </html>
