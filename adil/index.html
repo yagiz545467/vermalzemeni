@@ -102,13 +102,16 @@
     <img src="https://media.giphy.com/media/3oriO0OEd9QIDdllqo/giphy.gif" alt="dans eden kedi" />
   </div>
 
-  <audio id="meowSound" src="https://www.fesliyanstudios.com/play-mp3/387" preload="auto"></audio>
+  <!-- Kedi sesleri -->
+  <audio id="meow1" src="https://www.myinstants.com/media/sounds/meowrgh.mp3" preload="auto"></audio>
+  <audio id="meow2" src="https://www.myinstants.com/media/sounds/sad-meow-song.mp3" preload="auto"></audio>
 
   <script>
     const btn = document.getElementById('surpriseBtn');
     const topCats = document.getElementById('topCats');
     const bottomCats = document.getElementById('bottomCats');
-    const meow = document.getElementById('meowSound');
+    const meow1 = document.getElementById('meow1');
+    const meow2 = document.getElementById('meow2');
 
     btn.addEventListener('click', () => {
       topCats.classList.add('show');
@@ -119,7 +122,15 @@
       text.textContent = 'İyi ki doğdun Adil!';
       document.body.appendChild(text);
 
-      meow.play();
+      // her iki sesi 3 kez çal
+      for(let i = 0; i < 3; i++) {
+        setTimeout(() => {
+          meow1.currentTime = 0;
+          meow2.currentTime = 0;
+          meow1.play();
+          meow2.play();
+        }, i * 1500);
+      }
     });
   </script>
 </body>
