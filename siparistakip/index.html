@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>profilimikiraliyorum — Admin Sipariş</title>
+<meta name="description" content="Şifre korumalı admin panel: Sipariş ekle ve listele. Sadece IBAN ödeme."/>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg1:#0b0b0d;--bg2:#16040a;--red:#e11d48;--red2:#ef4444;
+  --text:#f5f5f5;--muted:#b3b3b3;--card:#101014cc;--border:#2a2a2e;--shadow:0 10px 30px rgba(0,0,0,.4);
+}
+*{box-sizing:border-box}html,body{height:100%}
+body{margin:0;font-family:'Inter',system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;color:var(--text);
+  background: radial-gradient(1200px 800px at 10% 10%, rgba(225,29,72,.18), transparent 60%),
+              radial-gradient(1000px 600px at 90% 20%, rgba(239,68,68,.12), transparent 60%),
+              linear-gradient(160deg, var(--bg1), var(--bg2) 60%);
+  overflow-x:hidden;
+}
+.bg{position:fixed;inset:0;z-index:-1;pointer-events:none;
+  background: radial-gradient(300px 200px at 20% 30%, rgba(225,29,72,.35), transparent 70%),
+              radial-gradient(400px 260px at 80% 20%, rgba(239,68,68,.25), transparent 70%);
+  filter:blur(70px);animation:float 14s ease-in-out infinite alternate}
+@keyframes float{0%{transform:translateY(-10px) translateX(0)}100%{transform:translateY(20px) translateX(10px)}}
+.container{width:min(1100px,92%);margin-inline:auto}
+.header{display:flex;align-items:center;justify-content:space-between;padding:22px 0}
+.logo{font-weight:800;letter-spacing:.3px}
+.hero{padding:20px 0 6px}
+.hero h1{font-size:clamp(26px,3vw,40px);margin:0 0 6px}
+.muted{color:var(--muted)}
+.card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:20px;box-shadow:var(--shadow);margin:16px 0}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media (max-width:720px){.grid{grid-template-columns:1fr}}
+label{display:block;font-weight:600;margin:10px 0 6px}
+input[type="text"],input[type="url"],select{width:100%;margin-top:6px;padding:12px 14px;border-radius:12px;border:1px solid var(--border);background:#0c0c0fcc;color:var(--text)}
+.checkbox{display:flex;align-items:center;gap:10px;margin-top:10px}
+.btn{appearance:none;border:none;cursor:pointer;padding:12px 18px;border-radius:14px;font-weight:700;transition:transform .1s, box-shadow .2s, background .2s}
+.btn.solid{background:linear-gradient(90deg,var(--red),var(--red2));color:white;box-shadow:0 8px 24px rgba(225,29,72,.3)}
+.btn.solid:hover{transform:translateY(-1px)}
+.prices{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px 18px;margin:12px 0}
+.price-item{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border:1px dashed var(--border);border-radius:14px;background:#0f0f12aa}
+.footer{padding:30px 0 50px;color:var(--muted);text-align:center}
+/* Centered Password Modal */
+.modal{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:linear-gradient(180deg,rgba(0,0,0,.55),rgba(0,0,0,.8));backdrop-filter:blur(6px)}
+.modal-card{width:min(420px,92%);background:rgba(15,15,18,.95);border:1px solid var(--border);border-radius:18px;box-shadow:var(--shadow);padding:22px;text-align:center}
+.modal.hidden{display:none}
+.input{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--border);background:#0c0c0fcc;color:var(--text);margin:10px 0}
+.error{color:#fda4af;min-height:22px}
+.tag{display:inline-block;padding:6px 10px;border:1px solid var(--border);border-radius:999px;background:#0f0f12aa;margin-right:6px;font-size:12px}
+.order{border:1px solid var(--border);border-radius:14px;padding:14px;margin:10px 0;background:#0f0f12aa}
+.order h3{margin:0 0 8px}
+.order small{color:var(--muted)}
+a{color:#fff}
+.hidden{display:none}
+</style>
+</head>
+<body>
+<div class="bg"></div>
+
+<!-- Password Modal -->
+<div id="pwModal" class="modal hidden">
+  <div class="modal-card">
+    <h1 class="logo" style="background:linear-gradient(90deg,var(--red),var(--red2));-webkit-background-clip:text;background-clip:text;color:transparent">profilimikiraliyorum</h1>
+    <p class="muted">Admin girişi için şifreyi giriniz</p>
+    <input id="pwInput" type="password" class="input" placeholder="Şifre" autocomplete="current-password"/>
+    <button id="pwBtn" class="btn solid" style="width:100%">Giriş Yap</button>
+    <p id="pwErr" class="error"></p>
+  </div>
+</div>
+
+<header class="container header">
+  <div class="logo">profilimikiraliyorum</div>
+  <div class="muted">Admin Panel — Sadece IBAN</div>
+</header>
+
+<main class="container">
+  <section class="hero">
+    <h1>Sipariş Ekle</h1>
+    <p class="muted">Bu panel sadece senin erişimine özeldir. Aşağıdan sipariş gir; kayıtlar listede görüntülenir.</p>
+  </section>
+
+  <section class="card">
+    <h2>Hizmetler ve Fiyat</h2>
+    <div class="prices">
+      <div class="price-item"><span>Özel Reels Reklamı</span><strong>300 TL</strong></div>
+      <div class="price-item"><span>Post Reklamı</span><strong>200 TL</strong></div>
+      <div class="price-item"><span>Öne Çıkarılanlar (Hikaye)</span><strong>150 TL</strong></div>
+      <div class="price-item"><span>Hikaye Reklamı</span><strong>100 TL</strong></div>
+      <div class="price-item"><span>Doğum Günü Kutlama Videosu</span><strong>150 TL</strong></div>
+      <div class="price-item"><span>Selam Gönderme Videosu</span><strong>150 TL</strong></div>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Yeni Sipariş</h2>
+    <div class="grid">
+      <label>Müşteri Ad Soyad
+        <input id="inName" type="text" placeholder="Ad Soyad" required/>
+      </label>
+      <label>Hizmet
+        <select id="inService" required>
+          <option value="" disabled selected>Seçiniz</option>
+          <option data-price="300">Özel Reels Reklamı — 300</option>
+          <option data-price="200">Post Reklamı — 200</option>
+          <option data-price="150">Öne Çıkarılanlar (Hikaye) — 150</option>
+          <option data-price="100">Hikaye Reklamı — 100</option>
+          <option data-price="150">Doğum Günü Kutlama Videosu — 150</option>
+          <option data-price="150">Selam Gönderme Videosu — 150</option>
+        </select>
+      </label>
+    </div>
+    <label>Fotoğraf (URL)
+      <input id="inPhoto" type="url" placeholder="https://..."/>
+    </label>
+    <div class="checkbox">
+      <input id="inExpress" type="checkbox"/>
+      <label for="inExpress" style="margin:0;font-weight:600">Erken Teslim (+100 TL)</label>
+    </div>
+    <div class="grid">
+      <div>
+        <span class="tag">Ara Toplam: <strong id="subtotal">0 TL</strong></span>
+        <span class="tag">Toplam: <strong id="grand">0 TL</strong></span>
+      </div>
+      <div style="text-align:right">
+        <button id="addOrder" class="btn solid">Siparişi Kaydet</button>
+      </div>
+    </div>
+
+    <p class="muted">Ödeme yöntemi: <strong>IBAN</strong></p>
+    <div class="card" style="margin-top:10px">
+      <p style="margin:0">
+        IBAN: <strong id="ibanText">TR00 0000 0000 0000 0000 0000 00</strong><br/>
+        Alıcı: <strong id="ibanName">Ad Soyad / Ünvan</strong>
+      </p>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Kayıtlı Siparişler</h2>
+    <div id="orders"></div>
+  </section>
+</main>
+
+<footer class="footer container">
+  <p>© <span id="y"></span> profilimikiraliyorum — Admin</p>
+</footer>
+
+<script>
+// ===== IBAN AYARLARI (burayı düzenleyebilirsin) =====
+const IBAN_TEXT = "TR00 0000 0000 0000 0000 0000 00"; // IBAN'ınızı yazın
+const IBAN_NAME = "Ad Soyad / Ünvan"; // Alıcı adı
+
+// ===== UI / Orders JS (auth hariç) =====
+const serviceSel = document.getElementById("inService");
+const express = document.getElementById("inExpress");
+const subtotalEl = document.getElementById("subtotal");
+const grandEl = document.getElementById("grand");
+const inName = document.getElementById("inName");
+const inPhoto = document.getElementById("inPhoto");
+const addOrder = document.getElementById("addOrder");
+const ordersWrap = document.getElementById("orders");
+
+function getServicePrice(){
+  const opt = serviceSel.selectedOptions[0];
+  if(!opt) return 0;
+  return Number(opt.dataset.price || 0);
+}
+function renderTotals(){
+  const sub = getServicePrice();
+  const total = sub + (express.checked ? 100 : 0);
+  subtotalEl.textContent = sub + " TL";
+  grandEl.textContent = total + " TL";
+}
+serviceSel.addEventListener("change", renderTotals);
+express.addEventListener("change", renderTotals);
+renderTotals();
+
+const ORDERS_KEY = "pmk_admin_orders";
+function loadOrders(){ try{ return JSON.parse(localStorage.getItem(ORDERS_KEY) || "[]"); }catch(e){ return []; } }
+function saveOrders(arr){ localStorage.setItem(ORDERS_KEY, JSON.stringify(arr)); }
+function randomId(){ const d = new Date(); const y = d.getFullYear(); const n = Math.floor(Math.random()*9000)+1000; return `ORD-${y}-${n}`; }
+
+function addOrderRecord(){
+  const name = (inName.value || "").trim();
+  const service = serviceSel.value;
+  const photo = (inPhoto.value || "").trim();
+  if(!name || !service){
+    alert("Lütfen Ad Soyad ve Hizmet seçimini doldurun.");
+    return;
+  }
+  const order = {
+    id: randomId(),
+    name, service, photo,
+    express: !!express.checked,
+    basePrice: getServicePrice(),
+    total: getServicePrice() + (express.checked ? 100 : 0),
+    createdAt: new Date().toISOString(),
+    status: "Alındı"
+  };
+  const arr = loadOrders();
+  arr.unshift(order);
+  saveOrders(arr);
+  inName.value = ""; serviceSel.selectedIndex = 0; inPhoto.value = ""; express.checked = false; renderTotals();
+  renderList();
+}
+addOrder.addEventListener("click", addOrderRecord);
+
+function delOrder(id){
+  let arr = loadOrders();
+  arr = arr.filter(o => o.id !== id);
+  saveOrders(arr);
+  renderList();
+}
+function renderList(){
+  const arr = loadOrders();
+  ordersWrap.innerHTML = arr.map(o => {
+    return `
+      <div class="order">
+        <h3>${o.name} — <small>${o.id}</small></h3>
+        <div class="prices">
+          <div class="price-item"><span>Hizmet</span><strong>${o.service}</strong></div>
+          <div class="price-item"><span>Erken Teslim</span><strong>${o.express ? "Evet (+100)" : "Hayır"}</strong></div>
+          <div class="price-item"><span>Tutar</span><strong>${o.total} TL</strong></div>
+          <div class="price-item"><span>Durum</span><strong>${o.status}</strong></div>
+        </div>
+        ${o.photo ? `<p>Fotoğraf: <a href="${o.photo}" target="_blank" rel="noopener">${o.photo}</a></p>` : ""}
+        <p><small>Oluşturulma: ${new Date(o.createdAt).toLocaleString()}</small></p>
+        <div style="text-align:right">
+          <button class="btn solid" onclick="delOrder('${o.id}')">Sil</button>
+        </div>
+      </div>
+    `;
+  }).join("") || '<p class="muted">Henüz sipariş yok.</p>';
+}
+renderList();
+
+document.getElementById("ibanText").textContent = IBAN_TEXT;
+document.getElementById("ibanName").textContent = IBAN_NAME;
+document.getElementById("y").textContent = new Date().getFullYear();
+</script>
+
+<!-- Auth (server-side) client helper -->
+<script src="shifre-client.js"></script>
+</body>
+</html>
