@@ -1,0 +1,116 @@
+/* Base */
+:root{
+  --bg1:#0b0b0d;
+  --bg2:#16040a;
+  --red:#e11d48;
+  --red2:#ef4444;
+  --text:#f5f5f5;
+  --muted:#b3b3b3;
+  --card:#101014cc;
+  --border:#2a2a2e;
+  --shadow: 0 10px 30px rgba(0,0,0,.4);
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  font-family:'Inter', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  color:var(--text);
+  background: radial-gradient(1200px 800px at 10% 10%, rgba(225,29,72,.18), transparent 60%),
+              radial-gradient(1000px 600px at 90% 20%, rgba(239,68,68,.12), transparent 60%),
+              linear-gradient(160deg, var(--bg1), var(--bg2) 60%);
+  overflow-x:hidden;
+}
+
+/* Animated moving gradient glow */
+.bg{
+  position:fixed; inset:0; z-index:-1; pointer-events:none;
+  background: radial-gradient(300px 200px at 20% 30%, rgba(225,29,72,.35), transparent 70%),
+              radial-gradient(400px 260px at 80% 20%, rgba(239,68,68,.25), transparent 70%);
+  filter: blur(70px);
+  animation: float 14s ease-in-out infinite alternate;
+}
+@keyframes float{
+  0%{ transform: translateY(-10px) translateX(0) }
+  100%{ transform: translateY(20px) translateX(10px) }
+}
+
+/* Layout */
+.container{width:min(1100px, 92%); margin-inline:auto}
+.header{display:flex; align-items:center; justify-content:space-between; padding:22px 0}
+.logo{font-weight:800; letter-spacing:.3px}
+.nav a{color:var(--text); text-decoration:none; margin-left:18px; opacity:.8}
+.nav a:hover{opacity:1}
+
+.hero{padding:40px 0 10px}
+.hero h1{font-size:clamp(28px,3.2vw,42px); margin:0 0 10px}
+.hero p{color:var(--muted); margin:0 0 16px}
+
+.card{
+  background: var(--card);
+  border:1px solid var(--border);
+  border-radius:18px;
+  padding:24px;
+  box-shadow: var(--shadow);
+  margin:18px 0;
+}
+
+.prices{display:grid; grid-template-columns: repeat(auto-fit, minmax(240px,1fr)); gap:10px 18px; margin:12px 0 16px}
+.price-item{display:flex; align-items:center; justify-content:space-between; padding:12px 14px; border:1px dashed var(--border); border-radius:14px; background:#0f0f12aa}
+
+.form label{display:block; font-weight:600; margin:10px 0 6px}
+.form label input, .form label textarea, .form label select{
+  width:100%; margin-top:6px; padding:12px 14px; border-radius:12px; border:1px solid var(--border); background:#0c0c0fcc; color:var(--text);
+}
+.grid{display:grid; grid-template-columns:1fr 1fr; gap:14px}
+@media (max-width:720px){ .grid{grid-template-columns:1fr} }
+
+.pay legend{font-weight:800}
+.pay label{font-weight:500}
+.conditional{margin-top:10px}
+
+.form-inline{display:flex; gap:10px; margin:10px 0}
+.form-inline input{
+  flex:1; padding:12px 14px; border-radius:12px; border:1px solid var(--border); background:#0c0c0fcc; color:var(--text);
+}
+
+.btn{
+  appearance:none; border:none; cursor:pointer;
+  padding:12px 18px; border-radius:14px; font-weight:700;
+  transition: transform .1s ease, box-shadow .2s ease, background .2s ease;
+}
+.btn:hover{transform: translateY(-1px)}
+.btn:active{transform: translateY(0)}
+.btn.solid{background: linear-gradient(90deg, var(--red), var(--red2)); color:white; box-shadow: 0 8px 24px rgba(225,29,72,.3)}
+.btn.outline{background: transparent; color:var(--text); border:1px solid var(--border)}
+
+.success{margin-top:16px; padding:12px 14px; border-radius:12px; background:rgba(34,197,94,.12); border:1px solid rgba(34,197,94,.35)}
+.muted{color:var(--muted)}
+.note{color:#fca5a5}
+
+.footer{padding:30px 0 50px; color:var(--muted); text-align:center}
+
+/* Password Gate */
+.gate{
+  position:fixed; inset:0; display:flex; align-items:center; justify-content:center;
+  background: radial-gradient(400px 260px at 20% 20%, rgba(225,29,72,.18), transparent 70%),
+              linear-gradient(180deg, rgba(0,0,0,.55), rgba(0,0,0,.75));
+  backdrop-filter: blur(6px);
+}
+.gate.hidden{display:none}
+.gate-card{
+  width:min(420px, 92%);
+  background: rgba(15,15,18,.9);
+  border:1px solid var(--border);
+  border-radius:18px;
+  box-shadow: var(--shadow);
+  padding:22px;
+  text-align:center;
+}
+.brand{margin:0 0 4px; background: linear-gradient(90deg, var(--red), var(--red2)); -webkit-background-clip:text; background-clip:text; color:transparent}
+.subtitle{margin:0 0 14px; color:var(--muted)}
+.input{width:100%; padding:12px 14px; border-radius:12px; border:1px solid var(--border); background:#0c0c0fcc; color:var(--text); margin-bottom:10px}
+.error{color:#fda4af; min-height:22px}
+
+/* tiny details */
+code{background:#0c0c0fcc; padding:2px 6px; border-radius:8px; border:1px solid var(--border)}
