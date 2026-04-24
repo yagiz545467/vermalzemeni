@@ -1,83 +1,95 @@
-// Mocking the base44 client for local development
-const mockStorage = {
-    getItem: (key) => {
-        try {
-            const item = localStorage.getItem(key);
-            return item ? JSON.parse(item) : [];
-        } catch {
-            return [];
-        }
-    },
-    setItem: (key, value) => {
-        localStorage.setItem(key, JSON.stringify(value));
-    }
-};
+import { supabase } from './supabaseClient';
 
 export const base44 = {
     auth: {
         me: async () => {
-            return {
-                id: 'local-user-id',
-                name: 'Local Admin',
-                email: 'admin@local.com',
-                role: 'admin'
-            };
+            const storedUser = localStorage.getItem('admin_user');
+            return storedUser ? JSON.parse(storedUser) : null;
         },
         logout: (redirectUrl) => {
-            console.log('Logged out locally');
+            localStorage.removeItem('admin_user');
             if (redirectUrl) window.location.href = redirectUrl;
         },
         redirectToLogin: (redirectUrl) => {
-            console.log('Redirecting to login (mock)');
-            window.location.href = '/';
+            window.location.href = '/admin';
         }
     },
     entities: {
         Order: {
             list: async (sort, limit) => {
-                let orders = mockStorage.getItem('local_orders');
-                if (sort === '-created_date') {
-                    orders.sort((a, b) => new Date(b.created_date) - new Date(a.created_date));
+                let query = supabase.from('orders').select('*');
+                
+                if (sort === '-created_date' || sort === '-created_at') {
+                    query = query.order('created_at', { ascending: false });
                 }
-                return orders.slice(0, limit || 100);
+                
+                if (limit) {
+                    query = query.limit(limit);
+                }
+                
+                const { data, error } = await query;
+                if (error) throw error;
+                return data || [];
             },
-            create: async (data) => {
-                const orders = mockStorage.getItem('local_orders');
-                const newOrder = {
-                    ...data,
-                    id: 'ord_' + Math.random().toString(36).substr(2, 9),
-                    created_date: new Date().toISOString()
-                };
-                orders.push(newOrder);
-                mockStorage.setItem('local_orders', orders);
-                return newOrder;
+            create: async (orderData) => {
+                const { data, error } = await supabase
+                    .from('orders')
+                    .insert([orderData])
+                    .select();
+                
+                if (error) throw error;
+                return data[0];
             },
-            update: async (id, data) => {
-                let orders = mockStorage.getItem('local_orders');
-                orders = orders.map(o => o.id === id ? { ...o, ...data } : o);
-                mockStorage.setItem('local_orders', orders);
-                return orders.find(o => o.id === id);
+            update: async (id, updateData) => {
+                const { data, error } = await supabase
+                    .from('orders')
+                    .update(updateData)
+                    .eq('id', id)
+                    .select();
+                
+                if (error) throw error;
+                return data[0];
             },
             filter: async (params) => {
-                const orders = mockStorage.getItem('local_orders');
-                return orders.filter(o => {
-                    return Object.entries(params).every(([key, val]) => o[key] === val);
+                let query = supabase.from('orders').select('*');
+                
+                Object.entries(params).forEach(([key, val]) => {
+                    query = query.eq(key, val);
                 });
+                
+                const { data, error } = await query;
+                if (error) throw error;
+                return data || [];
             }
         }
     },
     integrations: {
         Core: {
             UploadFile: async ({ file }) => {
-                console.log('Mocking file upload for:', file.name);
-                // Return a fake URL (or base64 if small, but let's keep it simple)
-                return new Promise((resolve) => {
-                    const reader = new FileReader();
-                    reader.onloadend = () => {
-                        resolve({ file_url: reader.result });
-                    };
-                    reader.readAsDataURL(file);
-                });
+                // Supabase Storage'a yükleme (Public 'receipts' bucket'ı gerektiğini unutma)
+                const fileExt = file.name.split('.').pop();
+                const fileName = `${Math.random()}.${fileExt}`;
+                const filePath = `${fileName}`;
+
+                const { data, error } = await supabase.storage
+                    .from('uploads') // Supabase'de 'uploads' adında bir bucket oluşturmalısın
+                    .upload(filePath, file);
+
+                if (error) {
+                    console.error('Upload error:', error);
+                    // Hata durumunda base64 fallback (geçici çözüm)
+                    return new Promise((resolve) => {
+                        const reader = new FileReader();
+                        reader.onloadend = () => resolve({ file_url: reader.result });
+                        reader.readAsDataURL(file);
+                    });
+                }
+
+                const { data: { publicUrl } } = supabase.storage
+                    .from('uploads')
+                    .getPublicUrl(filePath);
+
+                return { file_url: publicUrl };
             }
         }
     }
