@@ -53,7 +53,7 @@ function OrderRow({ order }) {
                     </span>
                 </td>
                 <td className="py-3 px-4 text-sm text-muted-foreground">
-                    {new Date(order.created_date).toLocaleDateString('tr-TR')}
+                    {new Date(order.created_at || order.created_date).toLocaleDateString('tr-TR')}
                 </td>
                 <td className="py-3 px-4">
                     <ChevronDown className={`w-4 h-4 text-muted-foreground transition-transform ${expanded ? 'rotate-180' : ''}`} />
