@@ -148,6 +148,3 @@ export default function StepPayment({
         </motion.div>
     );
 }
-otion.div>
-    );
-}
