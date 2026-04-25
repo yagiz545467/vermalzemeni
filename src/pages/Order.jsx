@@ -34,7 +34,10 @@ export default function Order() {
         instagram_handle: '',
         contact_info: '',
         payment_receipt_url: '',
+        ip_address: '',
     });
+    const [privacyAccepted, setPrivacyAccepted] = useState(false);
+    const [captchaVerified, setCaptchaVerified] = useState(false);
 
     useEffect(() => {
         const params = new URLSearchParams(window.location.search);
@@ -43,6 +46,12 @@ export default function Order() {
         if (urun && PRICES[urun]) {
             setFormData((prev) => ({ ...prev, product: urun, product_price: PRICES[urun] }));
         }
+
+        // Fetch IP address
+        fetch('https://api.ipify.org?format=json')
+            .then(res => res.json())
+            .then(data => setFormData(prev => ({ ...prev, ip_address: data.ip })))
+            .catch(err => console.error('Error fetching IP:', err));
     }, []);
 
     const updateData = (partial) => setFormData((prev) => ({ ...prev, ...partial }));
@@ -66,6 +75,7 @@ export default function Order() {
             instagram_handle: formData.instagram_handle,
             contact_info: formData.contact_info,
             payment_receipt_url: formData.payment_receipt_url,
+            ip_address: formData.ip_address,
             status: 'odeme-bekleniyor',
         });
     };
@@ -119,7 +129,17 @@ export default function Order() {
                     {step === 1 && <StepRecipient key="s1" data={formData} onChange={updateData} />}
                     {step === 2 && <StepUpload key="s2" data={formData} onChange={updateData} />}
                     {step === 3 && <StepNotes key="s3" data={formData} onChange={updateData} />}
-                    {step === 4 && <StepPayment key="s4" data={formData} onChange={updateData} />}
+                    {step === 4 && (
+                        <StepPayment 
+                            key="s4" 
+                            data={formData} 
+                            onChange={updateData} 
+                            privacyAccepted={privacyAccepted}
+                            onPrivacyChange={setPrivacyAccepted}
+                            captchaVerified={captchaVerified}
+                            onCaptchaChange={setCaptchaVerified}
+                        />
+                    )}
                 </AnimatePresence>
 
                 {/* Navigation */}
@@ -146,7 +166,7 @@ export default function Order() {
                     ) : (
                         <Button
                             onClick={handleSubmit}
-                            disabled={createOrder.isPending}
+                            disabled={createOrder.isPending || !privacyAccepted || !captchaVerified}
                             className="bg-foreground hover:bg-foreground/90 text-background font-display font-bold gap-2 px-8"
                         >
                             {createOrder.isPending ? (

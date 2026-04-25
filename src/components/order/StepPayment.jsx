@@ -1,12 +1,23 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Copy, Check, Upload, Loader2, Image } from 'lucide-react';
+import { Copy, Check, Upload, Loader2, Image, ShieldAlert } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
+import HCaptcha from '@hcaptcha/react-hcaptcha';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Label } from '@/components/ui/label';
 
 const IBAN = 'TR51 0006 2001 1350 0006 6215 56';
 const ACCOUNT_NAME = 'LEYLA UZUN';
+const HCAPTCHA_SITE_KEY = 'c740d370-f96e-47b4-b19e-3f747cbad0ca';
 
-export default function StepPayment({ data, onChange }) {
+export default function StepPayment({ 
+    data, 
+    onChange, 
+    privacyAccepted, 
+    onPrivacyChange, 
+    captchaVerified, 
+    onCaptchaChange 
+}) {
     const [copied, setCopied] = useState(false);
     const [uploading, setUploading] = useState(false);
 
@@ -20,9 +31,14 @@ export default function StepPayment({ data, onChange }) {
         const file = e.target.files?.[0];
         if (!file) return;
         setUploading(true);
-        const { file_url } = await base44.integrations.Core.UploadFile({ file });
-        onChange({ payment_receipt_url: file_url });
-        setUploading(false);
+        try {
+            const { file_url } = await base44.integrations.Core.UploadFile({ file });
+            onChange({ payment_receipt_url: file_url });
+        } catch (error) {
+            console.error('Upload failed:', error);
+        } finally {
+            setUploading(false);
+        }
     };
 
     const price = data.product_price || 0;
@@ -90,6 +106,48 @@ export default function StepPayment({ data, onChange }) {
                     )}
                 </label>
             </div>
+
+            {/* Legal Disclaimer & Privacy Checkbox */}
+            <div className="space-y-4 pt-4 border-t border-border">
+                <div className="flex gap-3 p-4 rounded-xl bg-red-500/5 border border-red-500/20">
+                    <ShieldAlert className="w-5 h-5 text-red-500 shrink-0 mt-0.5" />
+                    <p className="text-xs text-foreground/80 leading-relaxed">
+                        <span className="font-bold text-red-500">YASAL UYARI:</span> Sipariş formundaki herhangi bir alana (notlar, isimler vb.) şahsa, kuruma veya topluma yönelik küfür, hakaret, aşağılayıcı veya uygunsuz içerik yazılması durumunda; tüm yasal haklarımızı saklı tuttuğumuzu, bu verilerin (IP adresi dahil) hukuki mercilerle paylaşılarak yasal işlem başlatılabileceğini beyan ederiz.
+                    </p>
+                </div>
+
+                <div className="flex items-start space-x-3 pt-2">
+                    <Checkbox 
+                        id="privacy" 
+                        checked={privacyAccepted} 
+                        onCheckedChange={onPrivacyChange}
+                        className="mt-1"
+                    />
+                    <div className="grid gap-1.5 leading-none">
+                        <Label
+                            htmlFor="privacy"
+                            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                        >
+                            Gizlilik sözleşmesini ve KVKK metnini okudum, onaylıyorum.
+                        </Label>
+                        <p className="text-xs text-muted-foreground">
+                            Siparişimle ilgili verilerin işlenmesine ve saklanmasına izin veriyorum.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            {/* hCaptcha */}
+            <div className="flex justify-center pt-2">
+                <HCaptcha
+                    sitekey={HCAPTCHA_SITE_KEY}
+                    onVerify={(token) => onCaptchaChange(!!token)}
+                    onExpire={() => onCaptchaChange(false)}
+                />
+            </div>
         </motion.div>
+    );
+}
+otion.div>
     );
 }

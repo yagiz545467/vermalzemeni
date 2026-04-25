@@ -69,6 +69,7 @@ function OrderRow({ order }) {
                                 <p><span className="text-muted-foreground">Instagram:</span> <span className="font-medium">{order.instagram_handle || '—'}</span></p>
                                 <p><span className="text-muted-foreground">İletişim:</span> <span className="font-medium">{order.contact_info || '—'}</span></p>
                                 <p><span className="text-muted-foreground">Erken Teslimat:</span> <span className="font-medium">{order.early_delivery ? 'Evet' : 'Hayır'}</span></p>
+                                <p><span className="text-muted-foreground">IP Adresi:</span> <span className="font-mono text-xs font-medium bg-secondary/50 px-1.5 py-0.5 rounded">{order.ip_address || '—'}</span></p>
                             </div>
 
                             {order.notes && (
